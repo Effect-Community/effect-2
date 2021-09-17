@@ -5,5 +5,6 @@ export {} from "@effect-ts/system/Effect/succeed"
 export {} from "@effect-ts/system/Effect/type"
 export {} from "@effect-ts/system/Effect/do"
 export {} from "@effect-ts/system/Effect/bind"
+export {} from "@effect-ts/system/Effect/forever"
 
 export { Effect } from "@effect-ts/system/Effect/type"

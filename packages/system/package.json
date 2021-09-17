@@ -13,8 +13,20 @@
     "./Effect/*": {
       "default": "./lib/Effect/*.js"
     },
+    "./Utils": {
+      "default": "./lib/Utils/index.js"
+    },
     "./Utils/*": {
       "default": "./lib/Utils/*.js"
+    },
+    "./Option": {
+      "default": "./lib/Option/index.js"
+    },
+    "./Option/*": {
+      "default": "./lib/Option/*.js"
+    },
+    "./Global/*": {
+      "default": "./lib/Global/*.js"
     }
   },
   "typesVersions": {

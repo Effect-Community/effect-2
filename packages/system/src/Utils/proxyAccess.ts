@@ -3,6 +3,7 @@ export function proxyAccess<T>(target: T): T {
   return new Proxy(target, {
     get(target, p) {
       if (p in target) {
+        // @ts-expect-error
         return target[p]
       }
       throw new Error(

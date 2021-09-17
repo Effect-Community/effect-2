@@ -1,23 +1,41 @@
-import * as fs from "fs"
 import * as path from "path"
 import * as ts from "typescript"
 
-export default function bundle(_program: ts.Program) {
+export default function bundle(
+  _program: ts.Program,
+  _opts: { modules?: [{ src: string; module: string }] } = {}
+) {
   const checker = _program.getTypeChecker()
+
+  const root = path.join(_program.getCompilerOptions().configFilePath.toString(), "..")
+
+  const moduleMaps =
+    _opts.modules?.map(({ module, src }) => ({
+      module,
+      base: path.join(root, src)
+    })) || []
+
   return {
     before(ctx: ts.TransformationContext) {
       const factory = ctx.factory
 
       return (sourceFile: ts.SourceFile) => {
+        const matchingModules = moduleMaps.filter(({ base }) =>
+          sourceFile.fileName.startsWith(base)
+        )
+
+        const relativeTo =
+          matchingModules.length > 0
+            ? path.join(
+                matchingModules[matchingModules.length - 1].module,
+                sourceFile.fileName.slice(
+                  matchingModules[matchingModules.length - 1].base.length
+                ),
+                ".."
+              )
+            : undefined
+
         const exported: Map<string, ts.Identifier> = new Map()
-
-        let relativeTo: string | undefined
-
-        const matchRelativeTo = sourceFile.getFullText().match(/@ets_relative "(.*?)"/)
-
-        if (matchRelativeTo) {
-          relativeTo = matchRelativeTo[1]
-        }
 
         sourceFile.statements.forEach((node) => {
           if (

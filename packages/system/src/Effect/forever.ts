@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 import type { Effect } from "./type"
 
 declare module "./type" {

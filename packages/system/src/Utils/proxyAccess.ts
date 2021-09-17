@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 export function proxyAccess<T>(target: T): T {
   // @ts-expect-error
   return new Proxy(target, {

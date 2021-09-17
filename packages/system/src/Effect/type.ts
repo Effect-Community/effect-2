@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 import { proxyAccess } from "../Utils/proxyAccess"
 
 export declare const _R: unique symbol

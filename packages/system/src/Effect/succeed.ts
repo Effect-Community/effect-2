@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 import { ISucceed } from "./instruction"
 import type { Effect } from "./type"
 

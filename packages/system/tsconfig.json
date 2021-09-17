@@ -10,7 +10,12 @@
       "@effect-ts/system": ["./src"],
       "@effect-ts/system/*": ["./src/*"]
     },
-    "plugins": [{ "transform": "../plugin/src/index.ts" }]
+    "plugins": [
+      {
+        "transform": "../plugin/src/index.ts",
+        "modules": [{ "src": "./src", "module": "@effect-ts/system" }]
+      }
+    ]
   },
   "include": ["src/**/*.ts"]
 }

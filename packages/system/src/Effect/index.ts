@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 export type {} from "./flatMap"
 export type {} from "./instruction"
 export type {} from "./map"

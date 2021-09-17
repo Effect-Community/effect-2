@@ -6,7 +6,12 @@
     "declaration": true,
     "outDir": "lib",
     "rootDir": "src",
-    "plugins": [{ "transform": "../plugin/src/index.ts" }],
+    "plugins": [
+      {
+        "transform": "../plugin/src/index.ts",
+        "modules": [{ "src": "./src", "module": "@effect-ts/core" }]
+      }
+    ],
     "paths": {
       "@effect-ts/core": ["./src"],
       "@effect-ts/core/*": ["./src/*"],

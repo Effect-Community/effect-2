@@ -1,5 +1,3 @@
-// @ets_relative "@effect-ts/system/Effect"
-
 import type { TypeUtils } from "../Utils/typeUtils"
 import type { Effect } from "./type"
 

@@ -1,4 +1,6 @@
-import { proxyAccess } from "@effect-ts/system/Utils/proxyAccess"
+// @ets_relative "@effect-ts/system/Effect"
+
+import { proxyAccess } from "../Utils/proxyAccess"
 
 export declare const _R: unique symbol
 export declare const _E: unique symbol

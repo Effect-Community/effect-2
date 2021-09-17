@@ -1,3 +1,5 @@
+// @ets_relative "@effect-ts/system/Effect"
+
 export class ISucceed {
   readonly _tag = "Succeed"
   constructor(readonly thunk: () => unknown) {}

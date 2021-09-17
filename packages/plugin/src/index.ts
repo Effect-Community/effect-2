@@ -1,4 +1,5 @@
-// import * as path from "path"
+import * as fs from "fs"
+import * as path from "path"
 import * as ts from "typescript"
 
 export default function bundle(_program: ts.Program) {
@@ -9,6 +10,14 @@ export default function bundle(_program: ts.Program) {
 
       return (sourceFile: ts.SourceFile) => {
         const exported: Map<string, ts.Identifier> = new Map()
+
+        let relativeTo: string | undefined
+
+        const matchRelativeTo = sourceFile.getFullText().match(/@ets_relative "(.*?)"/)
+
+        if (matchRelativeTo) {
+          relativeTo = matchRelativeTo[1]
+        }
 
         sourceFile.statements.forEach((node) => {
           if (
@@ -56,6 +65,51 @@ export default function bundle(_program: ts.Program) {
         const modules: Map<string, ts.Identifier> = new Map()
 
         function rewriteMethods(node: ts.Node): ts.Node {
+          if (
+            relativeTo &&
+            ts.isImportDeclaration(node) &&
+            !node.importClause.isTypeOnly &&
+            node.moduleSpecifier &&
+            ts.isStringLiteral(node.moduleSpecifier) &&
+            node.moduleSpecifier.text.startsWith(".")
+          ) {
+            return ts.visitEachChild(
+              factory.updateImportDeclaration(
+                node,
+                node.decorators,
+                node.modifiers,
+                node.importClause,
+                factory.createStringLiteral(
+                  path.join(relativeTo, node.moduleSpecifier.text)
+                )
+              ),
+              rewriteMethods,
+              ctx
+            )
+          }
+          if (
+            relativeTo &&
+            ts.isExportDeclaration(node) &&
+            node.moduleSpecifier &&
+            ts.isStringLiteral(node.moduleSpecifier) &&
+            node.moduleSpecifier.text.startsWith(".") &&
+            !node.isTypeOnly
+          ) {
+            return ts.visitEachChild(
+              factory.updateExportDeclaration(
+                node,
+                node.decorators,
+                node.modifiers,
+                node.isTypeOnly,
+                node.exportClause,
+                factory.createStringLiteral(
+                  path.join(relativeTo, node.moduleSpecifier.text)
+                )
+              ),
+              rewriteMethods,
+              ctx
+            )
+          }
           if (ts.isPropertyAccessExpression(node)) {
             const tags = checker.getSymbolAtLocation(node).getJsDocTags()
 

@@ -1,5 +1,7 @@
-import { Effect } from "@effect-ts/system/Effect"
-import { TypeUtils } from "@effect-ts/system/Utils/typeUtils"
+// @ets_relative "@effect-ts/system"
+
+import { Effect } from "./Effect"
+import { TypeUtils } from "./Utils/typeUtils"
 
 // @ts-expect-error
 export declare namespace $T {

@@ -1,6 +1,8 @@
-import { Effect } from "@effect-ts/system/Effect/type"
+// @ets_relative "@effect-ts/system/Effect"
 
-declare module "@effect-ts/system/Effect/type" {
+import { Effect } from "./type"
+
+declare module "./type" {
   interface EffectStaticOps {
     /**
      * @ets_static do_ from "@effect-ts/system/Effect/do"

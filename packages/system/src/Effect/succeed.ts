@@ -1,7 +1,9 @@
-import { ISucceed } from "@effect-ts/system/Effect/instruction"
-import type { Effect } from "@effect-ts/system/Effect/type"
+// @ets_relative "@effect-ts/system/Effect"
 
-declare module "@effect-ts/system/Effect/type" {
+import { ISucceed } from "./instruction"
+import type { Effect } from "./type"
+
+declare module "./type" {
   interface EffectStaticOps {
     /**
      * @ets_static succeed from "@effect-ts/system/Effect/succeed"

@@ -1,6 +1,8 @@
-import { Effect } from "@effect-ts/system/Effect"
+// @ets_relative "@effect-ts/system/Effect"
 
-declare module "@effect-ts/system/Effect/type" {
+import { Effect } from "./type"
+
+declare module "./type" {
   interface EffectOps {
     /**
      * @ets_method map from "@effect-ts/system/Effect/map"

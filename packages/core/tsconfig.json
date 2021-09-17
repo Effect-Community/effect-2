@@ -9,7 +9,7 @@
     "plugins": [
       {
         "transform": "../plugin/src/index.ts",
-        "modules": [{ "src": "./src", "module": "@effect-ts/core" }]
+        "modules": [{ "module": "@effect-ts/core", "src": "./src" }]
       }
     ],
     "paths": {

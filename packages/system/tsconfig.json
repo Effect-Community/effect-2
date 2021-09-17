@@ -13,7 +13,7 @@
     "plugins": [
       {
         "transform": "../plugin/src/index.ts",
-        "modules": [{ "src": "./src", "module": "@effect-ts/system" }]
+        "modules": [{ "module": "@effect-ts/system", "src": "./src" }]
       }
     ]
   },

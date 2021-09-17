@@ -1,0 +1,17 @@
+.history
+node_modules
+.venv
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.eslintcache
+.idea/
+lib
+.testmondata
+dist
+.out
+*.cache.json

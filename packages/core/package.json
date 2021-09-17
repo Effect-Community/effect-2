@@ -1,0 +1,21 @@
+{
+  "name": "@effect-ts/core",
+  "version": "2.0.0-alpha.0",
+  "type": "module",
+  "exports": {
+    ".": "./lib/index.js",
+    "./*": {
+      "default": "./lib/*.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "lib/*"
+      ]
+    }
+  },
+  "dependencies": {
+    "@effect-ts/system": "2.0.0-alpha.0"
+  }
+}

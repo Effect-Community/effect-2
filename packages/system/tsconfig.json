@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "composite": true,
+    "declaration": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "paths": {
+      "@effect-ts/system": ["./src"],
+      "@effect-ts/system/*": ["./src/*"]
+    },
+    "plugins": [{ "transform": "../plugin/src/index.ts" }]
+  },
+  "include": ["src/**/*.ts"]
+}

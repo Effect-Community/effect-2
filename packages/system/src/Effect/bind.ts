@@ -1,10 +1,5 @@
 import type { Effect } from "@effect-ts/system/Effect"
-
-type Flat<T> = {
-  [k in keyof T]: T[k]
-} extends infer X
-  ? X
-  : never
+import type { TypeUtils } from "@effect-ts/system/Utils/typeUtils"
 
 declare module "@effect-ts/system/Effect/type" {
   interface EffectOps {
@@ -15,7 +10,7 @@ declare module "@effect-ts/system/Effect/type" {
       this: Effect<R, E, A>,
       k: K & (K extends keyof A ? [`key ${K} already used`] : K),
       f: (a: A) => Effect<R1, E1, B>
-    ): Effect<R & R1, E | E1, Flat<A & { readonly [k in K]: B }>>
+    ): Effect<R & R1, E | E1, TypeUtils.Flat<A & { readonly [k in K]: B }>>
   }
 }
 
@@ -26,10 +21,11 @@ export function bind<R, E, A extends {}, K extends string, R1, E1, B>(
   self: Effect<R, E, A>,
   k: K & (K extends keyof A ? [`key ${K} already used`] : K),
   f: (a: A) => Effect<R1, E1, B>
-): Effect<R & R1, E | E1, Flat<A & { readonly [k in K]: B }>> {
+): Effect<R & R1, E | E1, TypeUtils.Flat<A & { readonly [k in K]: B }>> {
   return self.flatMap((a) =>
     f(a).map(
-      (b) => Object.assign({}, a, { [k]: b }) as Flat<A & { readonly [k in K]: B }>
+      (b) =>
+        Object.assign({}, a, { [k]: b }) as TypeUtils.Flat<A & { readonly [k in K]: B }>
     )
   )
 }

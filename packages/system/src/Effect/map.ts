@@ -15,5 +15,3 @@ export function map<R, E, A, B>(
 ): Effect<R, E, B> {
   return self.flatMap((a) => Effect.succeed(() => f(a)))
 }
-
-export const ok = "okokok1"

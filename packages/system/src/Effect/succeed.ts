@@ -1,3 +1,4 @@
+import { ISucceed } from "@effect-ts/system/Effect/instruction"
 import type { Effect } from "@effect-ts/system/Effect/type"
 
 declare module "@effect-ts/system/Effect/type" {

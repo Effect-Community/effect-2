@@ -12,6 +12,9 @@
     },
     "./Effect/*": {
       "default": "./lib/Effect/*.js"
+    },
+    "./Utils/*": {
+      "default": "./lib/Utils/*.js"
     }
   },
   "typesVersions": {

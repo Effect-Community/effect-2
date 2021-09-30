@@ -1,17 +1,16 @@
-import { Option } from "./type"
+import { $Option, $OptionStaticOps } from "./type"
 
 declare module "./type" {
-  interface OptionStaticOps {
+  interface $OptionStaticOps {
     /**
-     * @ets_static emptyOf from "@effect-ts/system/Option/emptyOf"
+     * @ets_aspect emptyOf from "@effect-ts/system/Option/emptyOf"
      */
-    emptyOf<A>(): Option<A>
+    emptyOf<A>(): $Option<A>
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/Option/emptyOf"
- */
-export function emptyOf<A>(): Option<A> {
-  return Option.none
+export const emptyOf: $OptionStaticOps["emptyOf"] = () => $Option.none
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  $OptionStaticOps.emptyOf = emptyOf
 }

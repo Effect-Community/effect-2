@@ -1,19 +1,32 @@
 import { constUndefined } from "../Utils/constUndefined"
 import { identity } from "../Utils/identity"
-import type { Option } from "./type"
+import { $OptionOps, $OptionStaticOps } from "./type"
 
 declare module "./type" {
-  interface OptionOps<A> {
+  interface $OptionOps {
     /**
-     * @ets_method value from "@effect-ts/system/Option/value"
+     * @ets_method value_ from "@effect-ts/system/Option/value"
      */
-    readonly value: A | undefined
+    value<A>(this: $Option<A>): A | undefined
+  }
+  interface $OptionStaticOps {
+    /**
+     * @ets_aspect value from "@effect-ts/system/Option/value"
+     * @ets_unpipe value_
+     */
+    value<A>(self: $Option<A>): A | undefined
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/Option/value"
- */
-export function value<A>(self: Option<A>): A | undefined {
-  return self.fold(constUndefined, identity)
+export const value_: $OptionOps["value"] = function () {
+  return this.fold(constUndefined, identity)
+}
+
+export const value: $OptionStaticOps["value"] = function (self) {
+  return self.value()
+}
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  $OptionOps.value = value_
+  $OptionStaticOps.value = value
 }

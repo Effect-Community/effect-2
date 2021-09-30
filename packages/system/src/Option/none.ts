@@ -1,16 +1,18 @@
+import { unsafeCoerce } from "../Utils/coerce"
 import { INone } from "./instruction"
-import type { Option } from "./type"
+import { $OptionStaticOps } from "./type"
 
 declare module "./type" {
-  interface OptionStaticOps {
+  interface $OptionStaticOps {
     /**
-     * @ets_static none from "@effect-ts/system/Option/none"
+     * @ets_aspect none from "@effect-ts/system/Option/none"
      */
-    none: Option<never>
+    none: $Option<never>
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/Option/none"
- */
-export const none = new INone() as unknown as Option<never>
+export const none: $OptionStaticOps["none"] = unsafeCoerce(new INone())
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  $OptionStaticOps.none = none
+}

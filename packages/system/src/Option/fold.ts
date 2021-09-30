@@ -1,30 +1,40 @@
 import { ensureInstruction } from "./instruction"
-import type { Option } from "./type"
+import { $OptionOps, $OptionStaticOps } from "./type"
 
 declare module "./type" {
-  interface OptionOps<A> {
+  interface $OptionOps {
     /**
-     * @ets_method fold from "@effect-ts/system/Option/fold"
+     * @ets_method fold_ from "@effect-ts/system/Option/fold"
      */
-    fold<A, B, C>(this: Option<A>, onNone: () => B, onSome: (a: A) => C): B | C
+    fold<A, B, C>(this: $Option<A>, onNone: () => B, onSome: (a: A) => C): B | C
+  }
+  interface $OptionStaticOps {
+    /**
+     * @ets_aspect fold from "@effect-ts/system/Option/fold"
+     * @ets_unpipe fold_
+     */
+    fold<A, B, C>(onNone: () => B, onSome: (a: A) => C): (self: $Option<A>) => B | C
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/Option/fold"
- */
-export function fold<A, B, C>(
-  self: Option<A>,
-  onNone: () => B,
-  onSome: (a: A) => C
-): B | C {
-  ensureInstruction(self)
-  switch (self._tag) {
+export const fold_: $OptionOps["fold"] = function (onNone, onSome) {
+  ensureInstruction(this)
+  switch (this._tag) {
     case "Some": {
-      return onSome(self._value as A)
+      // @ts-expect-error
+      return onSome(this._value)
     }
     case "None": {
       return onNone()
     }
   }
+}
+
+export const fold: $OptionStaticOps["fold"] = function (onNone, onSome) {
+  return (self) => self.fold(onNone, onSome)
+}
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  $OptionOps.fold = fold_
+  $OptionStaticOps.fold = fold
 }

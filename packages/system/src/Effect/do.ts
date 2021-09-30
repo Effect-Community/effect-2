@@ -1,7 +1,7 @@
-import { Effect } from "./type"
+import { $Effect } from "./type"
 
 declare module "./type" {
-  interface EffectStaticOps {
+  interface $EffectStaticOps {
     /**
      * @ets_static do_ from "@effect-ts/system/Effect/do"
      */
@@ -12,4 +12,4 @@ declare module "./type" {
 /**
  * @ets_module "@effect-ts/system/Effect/do"
  */
-export const do_ = Effect.succeed(() => ({}))
+export const do_ = $Effect.succeed(() => ({}))

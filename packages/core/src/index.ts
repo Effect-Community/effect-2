@@ -1,8 +1,3 @@
-import { $T } from "@effect-ts/system"
+import { $Option } from "@effect-ts/system"
 
-export const x = $T.Effect.do
-  .bind("x", () => $T.Effect.succeed(() => 0))
-  .bind("y", () => $T.Effect.succeed(() => 0))
-  .map(({ x, y }) => x + y)
-
-console.log($T.Option.emptyOf<number>().getOrElse(() => 0))
+console.log($Option.some(0).pipe($Option.flatMap((a) => $Option.some(a))))

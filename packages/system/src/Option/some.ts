@@ -1,19 +1,18 @@
+import { unsafeCoerce } from "../Utils/coerce"
 import { ISome } from "./instruction"
-import type { Option } from "./type"
+import { $OptionStaticOps } from "./type"
 
 declare module "./type" {
-  interface OptionStaticOps {
+  interface $OptionStaticOps {
     /**
-     * @ets_static some from "@effect-ts/system/Option/some"
+     * @ets_aspect some from "@effect-ts/system/Option/some"
      */
-    some<A>(value: A): Option<A>
+    some<A>(value: A): $Option<A>
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/Option/some"
- */
-export function some<A>(value: A): Option<A> {
-  // @ts-expect-error
-  return new ISome(value)
+export const some: $OptionStaticOps["some"] = (a) => unsafeCoerce(new ISome(a))
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  $OptionStaticOps.some = some
 }

@@ -1,11 +1,15 @@
-import type { Option } from "./type"
+import type { $Option } from "./type"
 
-export class ISome {
+export class IOption {}
+
+export class ISome extends IOption {
   readonly _tag = "Some"
-  constructor(readonly _value: unknown) {}
+  constructor(readonly _value: unknown) {
+    super()
+  }
 }
 
-export class INone {
+export class INone extends IOption {
   readonly _tag = "None"
 }
 
@@ -14,7 +18,7 @@ export type Instruction = ISome | INone
 /**
  * @ets_optimize identity
  */
-export function toInstruction<A>(value: Option<A>): Instruction {
+export function toInstruction<A>(value: $Option<A>): Instruction {
   // @ts-expect-error
   return value
 }
@@ -23,7 +27,7 @@ export function toInstruction<A>(value: Option<A>): Instruction {
  * @ets_optimize remove
  */
 export function ensureInstruction<A>(
-  value: Option<A>
-): asserts value is Instruction & Option<A> {
+  value: $Option<A>
+): asserts value is Instruction & $Option<A> {
   //
 }

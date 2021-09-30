@@ -7,4 +7,4 @@ export type {} from "./do"
 export type {} from "./bind"
 export type {} from "./forever"
 
-export { Effect } from "./type"
+export { $Effect } from "./type"

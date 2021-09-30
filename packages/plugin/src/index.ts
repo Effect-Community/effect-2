@@ -3,7 +3,10 @@ import * as ts from "typescript"
 
 export default function bundle(
   _program: ts.Program,
-  _opts: { modules?: [{ src: string; module: string }] } = {}
+  _opts: {
+    modules?: [{ src: string; module: string }]
+    transformModules?: boolean
+  } = {}
 ) {
   const checker = _program.getTypeChecker()
 
@@ -14,6 +17,8 @@ export default function bundle(
       module,
       base: path.join(root, src)
     })) || []
+
+  const shouldPatchModules = _opts.transformModules !== false
 
   return {
     before(ctx: ts.TransformationContext) {
@@ -35,61 +40,30 @@ export default function bundle(
               )
             : undefined
 
-        const exported: Map<string, ts.Identifier> = new Map()
+        if (!relativeTo) {
+          throw new Error(`module config not found`)
+        }
 
-        sourceFile.statements.forEach((node) => {
-          if (
-            ts.isFunctionDeclaration(node) &&
-            node.name &&
-            node.modifiers &&
-            node.modifiers?.length > 0 &&
-            node.modifiers.findIndex(
-              (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
-            ) !== -1
-          ) {
-            const tags = ts.getJSDocTags(node)
-            let module: string | undefined
-            tags.forEach((tag) => {
-              if (tag.tagName.text === "ets_module" && tag.comment) {
-                module = tag.comment.toString()
-              }
-            })
-            if (module) {
-              exported.set(exportId(module, node.name.text), node.name)
-            }
-          }
-          if (
-            ts.isVariableStatement(node) &&
-            node.declarationList.declarations.length === 1 &&
-            node.declarationList.declarations[0].name &&
-            node.modifiers &&
-            node.modifiers?.length > 0 &&
-            node.modifiers.findIndex(
-              (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
-            ) !== -1
-          ) {
-            const tags = ts.getJSDocTags(node)
-            let module: string | undefined
-            tags.forEach((tag) => {
-              if (tag.tagName.text === "ets_module" && tag.comment) {
-                module = tag.comment.toString()
-              }
-            })
-            if (module) {
-              const name = node.declarationList.declarations[0].name.getText()
-              exported.set(exportId(module, name), factory.createIdentifier(name))
-            }
-          }
-        })
+        const fileParts = sourceFile.fileName.split("/")
+        const fileName = fileParts[fileParts.length - 1].replace(/\.(ts|tsx)$/, "")
+        const localModule =
+          fileName === "index" ? relativeTo : `${relativeTo}/${fileName}`
+
+        const exported: Map<string, ts.Identifier> = getExported(
+          sourceFile,
+          `"${localModule}"`,
+          factory
+        )
 
         const modules: Map<string, ts.Identifier> = new Map()
 
-        function rewriteMethods(node: ts.Node): ts.Node {
+        function processNode(node: ts.Node): ts.Node {
           if (
+            shouldPatchModules &&
             relativeTo &&
             ts.isImportDeclaration(node) &&
-            node.importClause &&
-            !node.importClause.isTypeOnly &&
+            ((node.importClause && !node.importClause.isTypeOnly) ||
+              !node.importClause) &&
             node.moduleSpecifier &&
             ts.isStringLiteral(node.moduleSpecifier) &&
             node.moduleSpecifier.text.startsWith(".")
@@ -104,11 +78,12 @@ export default function bundle(
                   path.join(relativeTo, node.moduleSpecifier.text)
                 )
               ),
-              rewriteMethods,
+              processNode,
               ctx
             )
           }
           if (
+            shouldPatchModules &&
             relativeTo &&
             ts.isExportDeclaration(node) &&
             node.moduleSpecifier &&
@@ -127,54 +102,55 @@ export default function bundle(
                   path.join(relativeTo, node.moduleSpecifier.text)
                 )
               ),
-              rewriteMethods,
+              processNode,
               ctx
             )
           }
-          if (ts.isPropertyAccessExpression(node)) {
-            const tags = checker.getSymbolAtLocation(node)?.getJsDocTags() || []
 
-            let ets_static: string | undefined
-            let ets_method: string | undefined
+          if (
+            ts.isCallExpression(node) &&
+            ts.isCallExpression(node.expression) &&
+            node.arguments.length === 1
+          ) {
+            const tags =
+              checker.getResolvedSignature(node.expression)?.getJsDocTags() || []
+
+            let ets_aspect: string | undefined
+            let ets_unpipe: string | undefined
 
             tags.forEach((tag) => {
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_aspect" && tag.text) {
+                ets_aspect = tag.text.map((_) => _.text).join(" ")
               }
-              if (tag.name === "ets_method" && tag.text) {
-                ets_method = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_unpipe" && tag.text) {
+                ets_unpipe = tag.text.map((_) => _.text).join(" ")
               }
             })
 
-            if (ets_static) {
-              if (exported.has(ets_static)) {
-                const method = exported.get(ets_static)!
+            if (ets_aspect && ets_unpipe && !ets_unpipe.includes(" from ")) {
+              const [, , module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
 
-                return method
-              } else {
-                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return factory.createPropertyAccessExpression(id!, fn)
-              }
+              ets_unpipe = `${ets_unpipe} from "${module}"`
             }
 
-            if (ets_method) {
-              if (exported.has(ets_method)) {
-                const method = exported.get(ets_method)!
+            if (ets_unpipe) {
+              if (exported.has(ets_unpipe)) {
+                const method = exported.get(ets_unpipe)!
 
-                return factory.createCallExpression(
-                  method,
-                  [],
-                  [ts.visitNode(node.expression, rewriteMethods)]
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      method,
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    [...node.arguments, ...node.expression.arguments]
+                  ),
+                  processNode,
+                  ctx
                 )
               } else {
-                const [, fn, module] = ets_method.match(/^(.*?) from "(.*?)"$/)!
+                const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
                 let id: ts.Identifier
                 if (modules.has(module)) {
                   id = modules.get(module)!
@@ -182,68 +158,62 @@ export default function bundle(
                   id = factory.createUniqueName("module")
                   modules.set(module, id)
                 }
-                return factory.createCallExpression(
-                  factory.createPropertyAccessExpression(id, fn),
-                  [],
-                  [ts.visitNode(node.expression, rewriteMethods)]
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(id, fn),
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    [...node.arguments, ...node.expression.arguments]
+                  ),
+                  processNode,
+                  ctx
                 )
               }
             }
           }
+
           if (
             ts.isCallExpression(node) &&
             ts.isPropertyAccessExpression(node.expression)
           ) {
             const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
-
             let ets_method: string | undefined
-            let ets_static: string | undefined
 
             tags.forEach((tag) => {
               if (tag.name === "ets_method" && tag.text) {
                 ets_method = tag.text.map((_) => _.text).join(" ")
               }
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
-              }
             })
 
-            if (ets_static) {
-              if (exported.has(ets_static)) {
-                const method = exported.get(ets_static)!
-
-                return factory.updateCallExpression(
-                  node,
-                  method,
-                  node.typeArguments,
-                  ts.visitNodes(node.arguments, rewriteMethods)
-                )
-              } else {
-                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return factory.updateCallExpression(
-                  node,
-                  factory.createPropertyAccessExpression(id, fn),
-                  node.typeArguments,
-                  ts.visitNodes(node.arguments, rewriteMethods)
-                )
-              }
+            if (ets_method === "pipe") {
+              return ts.visitNode(
+                factory.createCallExpression(
+                  node.arguments[0],
+                  [],
+                  [node.expression.expression]
+                ),
+                processNode
+              )
             }
 
             if (ets_method) {
               if (exported.has(ets_method)) {
                 const method = exported.get(ets_method)!
 
-                return factory.updateCallExpression(node, method, node.typeArguments, [
-                  ts.visitNode(node.expression.expression, rewriteMethods),
-                  ...ts.visitNodes(node.arguments, rewriteMethods)
-                ])
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      method,
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    [node.expression.expression, ...node.arguments]
+                  ),
+                  processNode,
+                  ctx
+                )
               } else {
                 const [, fn, module] = ets_method.match(/^(.*?) from "(.*?)"$/)!
                 let id: ts.Identifier
@@ -253,26 +223,170 @@ export default function bundle(
                   id = factory.createUniqueName("module")
                   modules.set(module, id)
                 }
-                return factory.updateCallExpression(
-                  node,
-                  factory.createPropertyAccessExpression(
-                    id,
-                    factory.createIdentifier(fn)
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(id, fn),
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    [node.expression.expression, ...node.arguments]
                   ),
-                  node.typeArguments,
-                  [
-                    ts.visitNode(node.expression.expression, rewriteMethods),
-                    ...ts.visitNodes(node.arguments, rewriteMethods)
-                  ]
+                  processNode,
+                  ctx
                 )
               }
             }
           }
 
-          return ts.visitEachChild(node, rewriteMethods, ctx)
+          if (ts.isCallExpression(node)) {
+            const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
+            let ets_aspect: string | undefined
+
+            tags.forEach((tag) => {
+              if (tag.name === "ets_aspect" && tag.text) {
+                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              }
+            })
+
+            if (ets_aspect) {
+              if (exported.has(ets_aspect)) {
+                const method = exported.get(ets_aspect)!
+
+                return ts.visitEachChild(
+                  factory.createCallExpression(method, [], node.arguments),
+                  processNode,
+                  ctx
+                )
+              } else {
+                const [, fn, module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+                let id: ts.Identifier
+                if (modules.has(module)) {
+                  id = modules.get(module)!
+                } else {
+                  id = factory.createUniqueName("module")
+                  modules.set(module, id)
+                }
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(id, fn),
+                    [],
+                    node.arguments
+                  ),
+                  processNode,
+                  ctx
+                )
+              }
+            }
+          }
+
+          if (ts.isCallExpression(node)) {
+            const tags =
+              checker.getSymbolAtLocation(node.expression)?.getJsDocTags() || []
+
+            let ets_aspect: string | undefined
+            let ets_unpipe: string | undefined
+
+            tags.forEach((tag) => {
+              if (tag.name === "ets_aspect" && tag.text) {
+                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              }
+              if (tag.name === "ets_unpipe" && tag.text) {
+                ets_unpipe = tag.text.map((_) => _.text).join(" ")
+              }
+            })
+
+            if (ets_aspect && ets_unpipe && !ets_unpipe.includes(" from ")) {
+              const [, , module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+
+              ets_unpipe = `${ets_unpipe} from "${module}"`
+            }
+
+            if (ets_unpipe) {
+              if (exported.has(ets_unpipe)) {
+                const method = exported.get(ets_unpipe)!
+
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      method,
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    node.arguments
+                  ),
+                  processNode,
+                  ctx
+                )
+              } else {
+                const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
+                let id: ts.Identifier
+                if (modules.has(module)) {
+                  id = modules.get(module)!
+                } else {
+                  id = factory.createUniqueName("module")
+                  modules.set(module, id)
+                }
+                return ts.visitEachChild(
+                  factory.createCallExpression(
+                    factory.createPropertyAccessExpression(
+                      factory.createPropertyAccessExpression(id, fn),
+                      factory.createIdentifier("call")
+                    ),
+                    [],
+                    node.arguments
+                  ),
+                  processNode,
+                  ctx
+                )
+              }
+            }
+          }
+
+          if (ts.isPropertyAccessExpression(node)) {
+            const tags = checker.getSymbolAtLocation(node)?.getJsDocTags() || []
+            let ets_aspect: string | undefined
+
+            tags.forEach((tag) => {
+              if (tag.name === "ets_aspect" && tag.text) {
+                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              }
+            })
+
+            if (
+              ets_aspect &&
+              !(
+                ts.isBinaryExpression(node.parent) &&
+                node.parent.left === node &&
+                node.parent.operatorToken.getText() === "="
+              )
+            ) {
+              if (exported.has(ets_aspect)) {
+                const method = exported.get(ets_aspect)!
+
+                return method
+              } else {
+                const [, fn, module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+                let id: ts.Identifier
+                if (modules.has(module)) {
+                  id = modules.get(module)!
+                } else {
+                  id = factory.createUniqueName("module")
+                  modules.set(module, id)
+                }
+                return ts.visitEachChild(
+                  factory.createPropertyAccessExpression(id, fn),
+                  processNode,
+                  ctx
+                )
+              }
+            }
+          }
+
+          return ts.visitEachChild(node, processNode, ctx)
         }
 
-        let processed = ts.visitNode(sourceFile, rewriteMethods)
+        let processed = ts.visitNode(sourceFile, processNode)
 
         const imports: ts.ImportDeclaration[] = []
 
@@ -307,10 +421,43 @@ export default function bundle(
   }
 }
 
-function exportId(module: string, fn: string): string {
-  return `${fn} from ${module}`
+function getExported(
+  sourceFile: ts.SourceFile,
+  module: string,
+  factory: ts.NodeFactory
+) {
+  const exported: Map<string, ts.Identifier> = new Map()
+  sourceFile.statements.forEach((node) => {
+    if (
+      ts.isFunctionDeclaration(node) &&
+      node.name &&
+      node.modifiers &&
+      node.modifiers?.length > 0 &&
+      node.modifiers.findIndex(
+        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
+      ) !== -1
+    ) {
+      const tags = ts.getJSDocTags(node)
+
+      exported.set(exportId(module, node.name.text), node.name)
+    }
+    if (
+      ts.isVariableStatement(node) &&
+      node.declarationList.declarations.length === 1 &&
+      node.declarationList.declarations[0].name &&
+      node.modifiers &&
+      node.modifiers?.length > 0 &&
+      node.modifiers.findIndex(
+        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
+      ) !== -1
+    ) {
+      const name = node.declarationList.declarations[0].name.getText()
+      exported.set(exportId(module, name), factory.createIdentifier(name))
+    }
+  })
+  return exported
 }
 
-function prefix(str: string): string {
-  return `$__ets__${str}`
+function exportId(module: string, fn: string): string {
+  return `${fn} from ${module}`
 }

@@ -1,17 +1,17 @@
-import { Effect } from "./type"
+import { $Effect } from "./type"
 
 declare module "./type" {
-  interface EffectOps {
+  interface $EffectOps {
     /**
      * @ets_method map from "@effect-ts/system/Effect/map"
      */
-    map<R, E, A, B>(this: Effect<R, E, A>, f: (a: A) => B): Effect<R, E, B>
+    map<R, E, A, B>(this: $Effect<R, E, A>, f: (a: A) => B): $Effect<R, E, B>
   }
 }
 
 export function map<R, E, A, B>(
-  self: Effect<R, E, A>,
+  self: $Effect<R, E, A>,
   f: (a: A) => B
-): Effect<R, E, B> {
-  return self.flatMap((a) => Effect.succeed(() => f(a)))
+): $Effect<R, E, B> {
+  return self.flatMap((a) => $Effect.succeed(() => f(a)))
 }

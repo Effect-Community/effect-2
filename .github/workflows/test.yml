@@ -21,5 +21,6 @@ jobs:
           yarn
           yarn run ci
           node packages/core/dist/main.cjs
+          node packages/core/lib/index.js
         env:
           CI: "true"

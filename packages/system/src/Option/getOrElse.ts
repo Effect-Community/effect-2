@@ -10,7 +10,7 @@ declare module "./type" {
   }
   interface $OptionStaticOps {
     /**
-     * @ets_aspect getOrElse from "@effect-ts/system/Option/getOrElse"
+     * @ets_static getOrElse from "@effect-ts/system/Option/getOrElse"
      * @ets_unpipe getOrElse_
      */
     getOrElse<B>(orElse: () => B): <A>(self: $Option<A>) => A | B

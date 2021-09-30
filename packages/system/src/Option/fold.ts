@@ -10,7 +10,7 @@ declare module "./type" {
   }
   interface $OptionStaticOps {
     /**
-     * @ets_aspect fold from "@effect-ts/system/Option/fold"
+     * @ets_static fold from "@effect-ts/system/Option/fold"
      * @ets_unpipe fold_
      */
     fold<A, B, C>(onNone: () => B, onSome: (a: A) => C): (self: $Option<A>) => B | C

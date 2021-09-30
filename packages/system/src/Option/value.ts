@@ -11,7 +11,7 @@ declare module "./type" {
   }
   interface $OptionStaticOps {
     /**
-     * @ets_aspect value from "@effect-ts/system/Option/value"
+     * @ets_static value from "@effect-ts/system/Option/value"
      * @ets_unpipe value_
      */
     value<A>(self: $Option<A>): A | undefined

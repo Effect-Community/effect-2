@@ -115,20 +115,20 @@ export default function bundle(
             const tags =
               checker.getResolvedSignature(node.expression)?.getJsDocTags() || []
 
-            let ets_aspect: string | undefined
+            let ets_static: string | undefined
             let ets_unpipe: string | undefined
 
             tags.forEach((tag) => {
-              if (tag.name === "ets_aspect" && tag.text) {
-                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_static" && tag.text) {
+                ets_static = tag.text.map((_) => _.text).join(" ")
               }
               if (tag.name === "ets_unpipe" && tag.text) {
                 ets_unpipe = tag.text.map((_) => _.text).join(" ")
               }
             })
 
-            if (ets_aspect && ets_unpipe && !ets_unpipe.includes(" from ")) {
-              const [, , module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+            if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
+              const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
 
               ets_unpipe = `${ets_unpipe} from "${module}"`
             }
@@ -241,17 +241,17 @@ export default function bundle(
 
           if (ts.isCallExpression(node)) {
             const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
-            let ets_aspect: string | undefined
+            let ets_static: string | undefined
 
             tags.forEach((tag) => {
-              if (tag.name === "ets_aspect" && tag.text) {
-                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_static" && tag.text) {
+                ets_static = tag.text.map((_) => _.text).join(" ")
               }
             })
 
-            if (ets_aspect) {
-              if (exported.has(ets_aspect)) {
-                const method = exported.get(ets_aspect)!
+            if (ets_static) {
+              if (exported.has(ets_static)) {
+                const method = exported.get(ets_static)!
 
                 return ts.visitEachChild(
                   factory.createCallExpression(method, [], node.arguments),
@@ -259,7 +259,7 @@ export default function bundle(
                   ctx
                 )
               } else {
-                const [, fn, module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
                 let id: ts.Identifier
                 if (modules.has(module)) {
                   id = modules.get(module)!
@@ -284,20 +284,20 @@ export default function bundle(
             const tags =
               checker.getSymbolAtLocation(node.expression)?.getJsDocTags() || []
 
-            let ets_aspect: string | undefined
+            let ets_static: string | undefined
             let ets_unpipe: string | undefined
 
             tags.forEach((tag) => {
-              if (tag.name === "ets_aspect" && tag.text) {
-                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_static" && tag.text) {
+                ets_static = tag.text.map((_) => _.text).join(" ")
               }
               if (tag.name === "ets_unpipe" && tag.text) {
                 ets_unpipe = tag.text.map((_) => _.text).join(" ")
               }
             })
 
-            if (ets_aspect && ets_unpipe && !ets_unpipe.includes(" from ")) {
-              const [, , module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+            if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
+              const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
 
               ets_unpipe = `${ets_unpipe} from "${module}"`
             }
@@ -345,28 +345,28 @@ export default function bundle(
 
           if (ts.isPropertyAccessExpression(node)) {
             const tags = checker.getSymbolAtLocation(node)?.getJsDocTags() || []
-            let ets_aspect: string | undefined
+            let ets_static: string | undefined
 
             tags.forEach((tag) => {
-              if (tag.name === "ets_aspect" && tag.text) {
-                ets_aspect = tag.text.map((_) => _.text).join(" ")
+              if (tag.name === "ets_static" && tag.text) {
+                ets_static = tag.text.map((_) => _.text).join(" ")
               }
             })
 
             if (
-              ets_aspect &&
+              ets_static &&
               !(
                 ts.isBinaryExpression(node.parent) &&
                 node.parent.left === node &&
                 node.parent.operatorToken.getText() === "="
               )
             ) {
-              if (exported.has(ets_aspect)) {
-                const method = exported.get(ets_aspect)!
+              if (exported.has(ets_static)) {
+                const method = exported.get(ets_static)!
 
                 return method
               } else {
-                const [, fn, module] = ets_aspect.match(/^(.*?) from "(.*?)"$/)!
+                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
                 let id: ts.Identifier
                 if (modules.has(module)) {
                   id = modules.get(module)!

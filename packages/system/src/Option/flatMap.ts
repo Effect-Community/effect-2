@@ -9,7 +9,7 @@ declare module "./type" {
   }
   interface $OptionStaticOps {
     /**
-     * @ets_aspect flatMap from "@effect-ts/system/Option/flatMap"
+     * @ets_static flatMap from "@effect-ts/system/Option/flatMap"
      * @ets_unpipe flatMap_
      */
     flatMap<A, B>(f: (a: A) => $Option<B>): (self: $Option<A>) => $Option<B>

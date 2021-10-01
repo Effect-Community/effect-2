@@ -33,7 +33,7 @@ export interface $EffectOps {}
 
 export const registerEffectOp =
   /* #__PURE__ */
-  polyfiller<$EffectOps>([
+  polyfiller<$EffectOps>(
     ISucceed.prototype,
     IFlatMap.prototype,
     IEffectTotal.prototype,
@@ -42,11 +42,11 @@ export const registerEffectOp =
     ISuspendWith.prototype,
     IEffectAsync.prototype,
     IFold.prototype
-  ])
+  )
 
 export const registerEffectStaticOp =
   /* #__PURE__ */
-  polyfiller<$EffectStaticOps>([$Effect])
+  polyfiller<$EffectStaticOps>($Effect)
 
 export declare namespace $Effect {
   export type IO<A> = $Effect<unknown, never, A>

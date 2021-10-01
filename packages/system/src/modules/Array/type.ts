@@ -14,11 +14,11 @@ export const $Array = {} as $ArrayStaticOps
 
 export const registerArrayOp =
   /* #__PURE__ */
-  polyfiller<$ArrayOps>([Array.prototype])
+  polyfiller<$ArrayOps>(Array.prototype)
 
 export const registerArrayStaticOp =
   /* #__PURE__ */
-  polyfiller<$ArrayStaticOps>([$Array])
+  polyfiller<$ArrayStaticOps>($Array)
 
 export namespace $Array {
   export type _OutOf<T> = [T] extends [Array<infer A>] ? A : never

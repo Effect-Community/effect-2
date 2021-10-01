@@ -17,11 +17,11 @@ export const $Option = {} as $OptionStaticOps
 
 export const registerOptionOp =
   /* #__PURE__ */
-  polyfiller<$OptionOps>([ISome.prototype, INone.prototype])
+  polyfiller<$OptionOps>(ISome.prototype, INone.prototype)
 
 export const registerOptionStaticOp =
   /* #__PURE__ */
-  polyfiller<$OptionStaticOps>([$Option])
+  polyfiller<$OptionStaticOps>($Option)
 
 export namespace $Option {
   export type _OutOf<T> = [T] extends [

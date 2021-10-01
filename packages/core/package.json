@@ -8,10 +8,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./*": {
-      "default": [
-        "./lib/*.js",
-        "./lib/*/index.js"
-      ]
+      "default": "./lib/*.js"
     }
   },
   "typesVersions": {

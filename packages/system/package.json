@@ -5,9 +5,7 @@
   "exports": {
     ".": "./lib/index.js",
     "./*": {
-      "default": [
-        "./lib/*.js"
-      ]
+      "default": "./lib/*.js"
     }
   },
   "typesVersions": {

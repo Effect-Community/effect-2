@@ -239,15 +239,57 @@ export default function bundle(
             }
           }
 
+          if (ts.isBlock(node)) {
+            return ts.visitEachChild(
+              factory.updateBlock(
+                node,
+                node.statements.filter((statement) => {
+                  if (
+                    ts.isExpressionStatement(statement) &&
+                    ts.isCallExpression(statement.expression)
+                  ) {
+                    const tags =
+                      checker
+                        .getResolvedSignature(statement.expression)
+                        ?.getJsDocTags() || []
+
+                    let ets_optimize: string | undefined
+
+                    tags.forEach((tag) => {
+                      if (tag.name === "ets_optimize" && tag.text) {
+                        ets_optimize = tag.text.map((_) => _.text).join(" ")
+                      }
+                    })
+
+                    if (ets_optimize && ets_optimize === "remove") {
+                      return false
+                    }
+                  }
+                  return true
+                })
+              ),
+              processNode,
+              ctx
+            )
+          }
+
           if (ts.isCallExpression(node)) {
             const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
             let ets_static: string | undefined
+            let ets_optimize: string | undefined
 
             tags.forEach((tag) => {
               if (tag.name === "ets_static" && tag.text) {
                 ets_static = tag.text.map((_) => _.text).join(" ")
               }
+              if (tag.name === "ets_optimize" && tag.text) {
+                ets_optimize = tag.text.map((_) => _.text).join(" ")
+              }
             })
+
+            if (ets_optimize && ets_optimize === "identity") {
+              return ts.visitNode(node.arguments[0], processNode)
+            }
 
             if (ets_static) {
               if (exported.has(ets_static)) {

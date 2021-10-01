@@ -1,5 +1,5 @@
-import { $Effect } from "./Effect"
-import { $Option } from "./Option"
-import { $TypeUtils } from "./Utils/typeUtils"
+import { $Effect } from "./modules/Effect"
+import { $Option } from "./modules/Option"
+import { $TypeUtils } from "./modules/Utils/typeUtils"
 
 export { $Effect, $Option, $TypeUtils }

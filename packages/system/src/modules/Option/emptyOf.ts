@@ -3,7 +3,7 @@ import { $Option, $OptionStaticOps } from "./type"
 declare module "./type" {
   interface $OptionStaticOps {
     /**
-     * @ets_static emptyOf from "@effect-ts/system/Option/emptyOf"
+     * @ets_static emptyOf from "@effect-ts/system/modules/Option/emptyOf"
      */
     emptyOf<A>(): $Option<A>
   }

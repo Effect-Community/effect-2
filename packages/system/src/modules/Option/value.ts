@@ -5,13 +5,13 @@ import { $OptionOps, $OptionStaticOps } from "./type"
 declare module "./type" {
   interface $OptionOps {
     /**
-     * @ets_method value_ from "@effect-ts/system/Option/value"
+     * @ets_method value_ from "@effect-ts/system/modules/Option/value"
      */
     value<A>(this: $Option<A>): A | undefined
   }
   interface $OptionStaticOps {
     /**
-     * @ets_static value from "@effect-ts/system/Option/value"
+     * @ets_static value from "@effect-ts/system/modules/Option/value"
      * @ets_unpipe value_
      */
     value<A>(self: $Option<A>): A | undefined

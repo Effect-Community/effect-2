@@ -4,13 +4,13 @@ import { $OptionOps, $OptionStaticOps } from "./type"
 declare module "./type" {
   interface $OptionOps {
     /**
-     * @ets_method fold_ from "@effect-ts/system/Option/fold"
+     * @ets_method fold_ from "@effect-ts/system/modules/Option/fold"
      */
     fold<A, B, C>(this: $Option<A>, onNone: () => B, onSome: (a: A) => C): B | C
   }
   interface $OptionStaticOps {
     /**
-     * @ets_static fold from "@effect-ts/system/Option/fold"
+     * @ets_static fold from "@effect-ts/system/modules/Option/fold"
      * @ets_unpipe fold_
      */
     fold<A, B, C>(onNone: () => B, onSome: (a: A) => C): (self: $Option<A>) => B | C

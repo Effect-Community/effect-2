@@ -1,0 +1,10 @@
+import "./Option/emptyOf"
+import "./Option/flatMap"
+import "./Option/fold"
+import "./Option/getOrElse"
+import "./Option/none"
+import "./Option/pipe"
+import "./Option/some"
+import "./Option/value"
+
+export { $Option } from "./Option/type"

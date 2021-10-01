@@ -4,7 +4,7 @@ import type { $Effect } from "./type"
 declare module "./type" {
   interface $EffectOps {
     /**
-     * @ets_method flatMap from "@effect-ts/system/Effect/flatMap"
+     * @ets_method flatMap from "@effect-ts/system/modules/Effect/flatMap"
      */
     flatMap<R, E, A, R1, E1, B>(
       this: $Effect<R, E, A>,
@@ -14,7 +14,7 @@ declare module "./type" {
 }
 
 /**
- * @ets_module "@effect-ts/system/Effect/flatMap"
+ * @ets_module "@effect-ts/system/modules/Effect/flatMap"
  */
 export function flatMap<R, E, A, R1, E1, B>(
   self: $Effect<R, E, A>,

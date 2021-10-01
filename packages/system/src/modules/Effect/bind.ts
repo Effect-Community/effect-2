@@ -4,7 +4,7 @@ import type { $Effect } from "./type"
 declare module "./type" {
   interface $EffectOps {
     /**
-     * @ets_method bind from "@effect-ts/system/Effect/bind"
+     * @ets_method bind from "@effect-ts/system/modules/Effect/bind"
      */
     bind<R, E, A extends {}, K extends string, R1, E1, B>(
       this: $Effect<R, E, A>,
@@ -15,7 +15,7 @@ declare module "./type" {
 }
 
 /**
- * @ets_module "@effect-ts/system/Effect/bind"
+ * @ets_module "@effect-ts/system/modules/Effect/bind"
  */
 export function bind<R, E, A extends {}, K extends string, R1, E1, B>(
   self: $Effect<R, E, A>,

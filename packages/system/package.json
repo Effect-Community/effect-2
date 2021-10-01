@@ -5,28 +5,9 @@
   "exports": {
     ".": "./lib/index.js",
     "./*": {
-      "default": "./lib/*"
-    },
-    "./Effect": {
-      "default": "./lib/Effect/index.js"
-    },
-    "./Effect/*": {
-      "default": "./lib/Effect/*.js"
-    },
-    "./Utils": {
-      "default": "./lib/Utils/index.js"
-    },
-    "./Utils/*": {
-      "default": "./lib/Utils/*.js"
-    },
-    "./Option": {
-      "default": "./lib/Option/index.js"
-    },
-    "./Option/*": {
-      "default": "./lib/Option/*.js"
-    },
-    "./Global/*": {
-      "default": "./lib/Global/*.js"
+      "default": [
+        "./lib/*.js"
+      ]
     }
   },
   "typesVersions": {

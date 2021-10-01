@@ -3,13 +3,13 @@ import { $Option, $OptionOps, $OptionStaticOps } from "./type"
 declare module "./type" {
   interface $OptionOps {
     /**
-     * @ets_method flatMap_ from "@effect-ts/system/Option/flatMap"
+     * @ets_method flatMap_ from "@effect-ts/system/modules/Option/flatMap"
      */
     flatMap<A, B>(this: $Option<A>, f: (a: A) => $Option<B>): $Option<B>
   }
   interface $OptionStaticOps {
     /**
-     * @ets_static flatMap from "@effect-ts/system/Option/flatMap"
+     * @ets_static flatMap from "@effect-ts/system/modules/Option/flatMap"
      * @ets_unpipe flatMap_
      */
     flatMap<A, B>(f: (a: A) => $Option<B>): (self: $Option<A>) => $Option<B>

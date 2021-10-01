@@ -5,7 +5,7 @@ import { $OptionStaticOps } from "./type"
 declare module "./type" {
   interface $OptionStaticOps {
     /**
-     * @ets_static some from "@effect-ts/system/Option/some"
+     * @ets_static some from "@effect-ts/system/modules/Option/some"
      */
     some<A>(value: A): $Option<A>
   }

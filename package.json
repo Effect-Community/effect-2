@@ -7,9 +7,9 @@
     "dist": "ultra -r -b dist",
     "watch": "yarn ets:build -w",
     "clean": "ultra -r yarn ets:clean",
-    "ets:build": "cd $INIT_CWD && ttsc -b tsconfig.json",
-    "ets:watch": "cd $INIT_CWD && ttsc -p tsconfig.json --watch",
-    "ets:clean": "cd $INIT_CWD && rimraf lib tsconfig.tsbuildinfo dist",
+    "ets:build": "cd $INIT_CWD && ttsc -b tsconfig.build.json",
+    "ets:watch": "cd $INIT_CWD && ttsc -p tsconfig.build.json --watch",
+    "ets:clean": "cd $INIT_CWD && rimraf lib *.tsbuildinfo dist",
     "ets:webpack": "cd $INIT_CWD && webpack"
   },
   "packageManager": "yarn@3.0.2",

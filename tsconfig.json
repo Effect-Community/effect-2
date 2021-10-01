@@ -15,6 +15,5 @@
       "@effect-ts/core/*": ["./packages/core/src/*"]
     }
   },
-  "references": [{ "path": "packages/system" }, { "path": "packages/core" }],
   "include": ["**/*.ts"]
 }

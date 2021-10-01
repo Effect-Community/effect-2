@@ -1,5 +1,7 @@
+import { unsafeCoerce } from "../Utils/coerce"
 import { ISucceed } from "./instruction"
-import type { $Effect } from "./type"
+import type { $EffectStaticOps } from "./type"
+import { registerEffectStaticOp } from "./type"
 
 declare module "./type" {
   interface $EffectStaticOps {
@@ -10,10 +12,10 @@ declare module "./type" {
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/modules/Effect/succeed"
- */
-export function succeed<A>(thunk: () => A): $Effect.IO<A> {
-  // @ts-expect-error
-  return new ISucceed(thunk)
+export const succeed: $EffectStaticOps["succeed"] = function (thunk) {
+  return unsafeCoerce(new ISucceed(thunk))
+}
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  registerEffectStaticOp("succeed")(succeed)
 }

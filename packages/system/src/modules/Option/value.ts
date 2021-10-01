@@ -1,6 +1,7 @@
 import { constUndefined } from "../Utils/constUndefined"
 import { identity } from "../Utils/identity"
-import { $OptionOps, $OptionStaticOps } from "./type"
+import type { $OptionOps, $OptionStaticOps } from "./type"
+import { registerOptionOp, registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionOps {
@@ -27,6 +28,6 @@ export const value: $OptionStaticOps["value"] = function (self) {
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionOps.value = value_
-  $OptionStaticOps.value = value
+  registerOptionOp("value")(value_)
+  registerOptionStaticOp("value")(value)
 }

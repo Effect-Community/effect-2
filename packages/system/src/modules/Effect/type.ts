@@ -1,4 +1,15 @@
+import { polyfiller } from "../Utils/polyfiller"
 import { proxyAccess } from "../Utils/proxyAccess"
+import {
+  IEffectAsync,
+  IEffectTotal,
+  IEffectWith,
+  IFlatMap,
+  IFold,
+  ISucceed,
+  ISuspend,
+  ISuspendWith
+} from "./instruction"
 
 export declare const _Internal: unique symbol
 export declare const _R: unique symbol
@@ -16,11 +27,26 @@ export interface $Effect<R, E, A> extends $EffectOps {
 }
 
 export interface $EffectStaticOps {}
+export const $Effect = {} as $EffectStaticOps
+
 export interface $EffectOps {}
 
-export const $Effect: $EffectStaticOps =
+export const registerEffectOp =
   /* #__PURE__ */
-  proxyAccess({} as $EffectStaticOps)
+  polyfiller<$EffectOps>([
+    ISucceed.prototype,
+    IFlatMap.prototype,
+    IEffectTotal.prototype,
+    IEffectWith.prototype,
+    ISuspend.prototype,
+    ISuspendWith.prototype,
+    IEffectAsync.prototype,
+    IFold.prototype
+  ])
+
+export const registerEffectStaticOp =
+  /* #__PURE__ */
+  polyfiller<$EffectStaticOps>([$Effect])
 
 export declare namespace $Effect {
   export type IO<A> = $Effect<unknown, never, A>

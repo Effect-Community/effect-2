@@ -1,15 +1,11 @@
 import type { $Option } from "./type"
 
-export class IOption {}
-
-export class ISome extends IOption {
+export class ISome {
   readonly _tag = "Some"
-  constructor(readonly _value: unknown) {
-    super()
-  }
+  constructor(readonly _value: unknown) {}
 }
 
-export class INone extends IOption {
+export class INone {
   readonly _tag = "None"
 }
 

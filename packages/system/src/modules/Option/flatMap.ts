@@ -1,4 +1,5 @@
-import { $Option, $OptionOps, $OptionStaticOps } from "./type"
+import type { $OptionOps, $OptionStaticOps } from "./type"
+import { $Option, registerOptionOp, registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionOps {
@@ -25,6 +26,6 @@ export const flatMap: $OptionStaticOps["flatMap"] = function (f) {
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionOps.flatMap = flatMap_
-  $OptionStaticOps.flatMap = flatMap
+  registerOptionOp("flatMap")(flatMap_)
+  registerOptionStaticOp("flatMap")(flatMap)
 }

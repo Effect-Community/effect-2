@@ -1,4 +1,5 @@
-import { $Option, $OptionStaticOps } from "./type"
+import type { $OptionStaticOps } from "./type"
+import { $Option, registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionStaticOps {
@@ -12,5 +13,5 @@ declare module "./type" {
 export const emptyOf: $OptionStaticOps["emptyOf"] = () => $Option.none
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionStaticOps.emptyOf = emptyOf
+  registerOptionStaticOp("emptyOf")(emptyOf)
 }

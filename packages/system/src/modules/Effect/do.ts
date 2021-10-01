@@ -1,15 +1,17 @@
-import { $Effect } from "./type"
+import type { $EffectStaticOps } from "./type"
+import { $Effect, registerEffectStaticOp } from "./type"
 
 declare module "./type" {
   interface $EffectStaticOps {
     /**
      * @ets_static do_ from "@effect-ts/system/modules/Effect/do"
      */
-    do: typeof do_
+    do: $Effect.IO<{}>
   }
 }
 
-/**
- * @ets_module "@effect-ts/system/modules/Effect/do"
- */
-export const do_ = $Effect.succeed(() => ({}))
+export const do_: $EffectStaticOps["do"] = $Effect.succeed(() => ({}))
+
+if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+  registerEffectStaticOp("do")(do_)
+}

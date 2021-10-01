@@ -1,5 +1,6 @@
 import type { _A, _Internal } from "../Effect/type"
-import { IOption } from "./instruction"
+import { polyfiller } from "../Utils/polyfiller"
+import { INone, ISome } from "./instruction"
 
 export declare const _OptionId: unique symbol
 
@@ -11,16 +12,15 @@ export interface $Option<A> extends $OptionOps {
 }
 
 export interface $OptionOps {}
-
-// @ts-expect-error
-export const $OptionOps: $OptionOps = IOption.prototype
-
-// @ts-expect-error
-export const $OptionStaticOps: $OptionStaticOps = IOption
-
 export interface $OptionStaticOps {}
+export const $Option = {} as $OptionStaticOps
 
-export const $Option = $OptionStaticOps
+export const registerOptionOp = polyfiller<$OptionOps>([
+  ISome.prototype,
+  INone.prototype
+])
+
+export const registerOptionStaticOp = polyfiller<$OptionStaticOps>([$Option])
 
 export namespace $Option {
   export type _OutOf<T> = [T] extends [

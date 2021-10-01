@@ -1,4 +1,4 @@
-import { $OptionOps } from "./type"
+import { registerOptionOp } from "./type"
 
 declare module "./type" {
   interface $OptionOps {
@@ -10,7 +10,7 @@ declare module "./type" {
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionOps.pipe = function (f) {
+  registerOptionOp("pipe")(function (f) {
     return f(this)
-  }
+  })
 }

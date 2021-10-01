@@ -1,5 +1,6 @@
 import { identity } from "../Utils/identity"
-import { $OptionOps, $OptionStaticOps } from "./type"
+import type { $OptionOps, $OptionStaticOps } from "./type"
+import { registerOptionOp, registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionOps {
@@ -26,6 +27,6 @@ export const getOrElse: $OptionStaticOps["getOrElse"] = function (orElse) {
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionOps.getOrElse = getOrElse_
-  $OptionStaticOps.getOrElse = getOrElse
+  registerOptionOp("getOrElse")(getOrElse_)
+  registerOptionStaticOp("getOrElse")(getOrElse)
 }

@@ -1,6 +1,7 @@
 import { unsafeCoerce } from "../Utils/coerce"
 import { ISome } from "./instruction"
-import { $OptionStaticOps } from "./type"
+import type { $OptionStaticOps } from "./type"
+import { registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionStaticOps {
@@ -14,5 +15,5 @@ declare module "./type" {
 export const some: $OptionStaticOps["some"] = (a) => unsafeCoerce(new ISome(a))
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionStaticOps.some = some
+  registerOptionStaticOp("some")(some)
 }

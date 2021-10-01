@@ -1,5 +1,6 @@
 import { ensureInstruction } from "./instruction"
-import { $OptionOps, $OptionStaticOps } from "./type"
+import type { $OptionOps, $OptionStaticOps } from "./type"
+import { registerOptionOp, registerOptionStaticOp } from "./type"
 
 declare module "./type" {
   interface $OptionOps {
@@ -35,6 +36,6 @@ export const fold: $OptionStaticOps["fold"] = function (onNone, onSome) {
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  $OptionOps.fold = fold_
-  $OptionStaticOps.fold = fold
+  registerOptionOp("fold")(fold_)
+  registerOptionStaticOp("fold")(fold)
 }

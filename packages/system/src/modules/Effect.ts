@@ -6,6 +6,7 @@ import "./Effect/type"
 import "./Effect/do"
 import "./Effect/delay"
 import "./Effect/bind"
+import "./Effect/pipe"
 import "./Effect/forever"
 
 export { $Effect } from "./Effect/type"

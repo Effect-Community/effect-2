@@ -1,5 +1,13 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@effect-ts/system": ["./packages/system/lib"],
+      "@effect-ts/system/*": ["./packages/system/lib/*"],
+      "@effect-ts/core": ["./packages/core/lib"],
+      "@effect-ts/core/*": ["./packages/core/lib/*"]
+    }
+  },
   "references": [
     { "path": "packages/system/tsconfig.build.json" },
     { "path": "packages/core/tsconfig.build.json" }

@@ -11,13 +11,7 @@
         "transform": "../plugin/src/index.ts",
         "modules": [{ "module": "@effect-ts/core", "src": "./src" }]
       }
-    ],
-    "paths": {
-      "@effect-ts/core": ["./src"],
-      "@effect-ts/core/*": ["./src/*"],
-      "@effect-ts/system": ["../system/lib"],
-      "@effect-ts/system/*": ["../system/lib/*"]
-    }
+    ]
   },
   "include": ["src/**/*.ts"]
 }

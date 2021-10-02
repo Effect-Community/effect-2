@@ -1,8 +1,8 @@
-import { T } from "./prelude.js"
+import { $Effect } from "@effect-ts/system"
 
 console.log(
-  T.do()
-    .bind("x", () => T.succeed(() => 1))
-    .bind("y", () => T.succeed(() => 2))
-    ["*>"](T.succeed(() => 0))
+  $Effect.do
+    .bind("x", () => $Effect.succeed(() => 1))
+    .bind("y", () => $Effect.succeed(() => 2))
+    ["*>"]($Effect.succeed(() => 0))
 )

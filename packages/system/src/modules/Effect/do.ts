@@ -6,16 +6,13 @@ declare module "./type" {
     /**
      * @ets_static do_ from "@effect-ts/system/modules/Effect/do"
      */
-    do(__ets_trace?: string): $Effect.IO<{}>
+    do: $Effect.IO<{}>
   }
 }
 
-/**
- * @ets_trace off
- */
-export const do_: $EffectStaticOps["do"] = function (trace) {
-  return $Effect.succeed(() => ({}), trace)
-}
+export const do_: $EffectStaticOps["do"] =
+  /* #__PURE__ */
+  $Effect.succeed(() => ({}), void 0)
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
   registerEffectStaticOp("do")(do_)

@@ -10,7 +10,9 @@ declare module "./type" {
   }
 }
 
-export const do_: $EffectStaticOps["do"] = $Effect.succeed(() => ({}))
+export const do_: $EffectStaticOps["do"] =
+  /* #__PURE__ */
+  $Effect.succeed(() => ({}))
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
   registerEffectStaticOp("do")(do_)

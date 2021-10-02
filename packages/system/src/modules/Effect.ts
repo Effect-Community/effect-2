@@ -8,5 +8,7 @@ import "./Effect/delay"
 import "./Effect/bind"
 import "./Effect/pipe"
 import "./Effect/forever"
+import "./Effect/zipLeft"
+import "./Effect/zipRight"
 
 export { $Effect } from "./Effect/type"

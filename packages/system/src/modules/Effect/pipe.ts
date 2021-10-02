@@ -1,16 +1,11 @@
+import type { Pipe } from "../Utils/pipe"
+import { __pipe } from "../Utils/pipe"
 import { registerEffectOp } from "./type"
 
 declare module "./type" {
-  interface $EffectOps {
-    /**
-     * @ets_method pipe
-     */
-    pipe<A, B>(this: A, f: (a: A) => B): B
-  }
+  interface $EffectOps extends Pipe {}
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
-  registerEffectOp("pipe")(function (f) {
-    return f(this)
-  })
+  registerEffectOp("pipe")(__pipe)
 }

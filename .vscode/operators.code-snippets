@@ -13,5 +13,10 @@
     "prefix": "!",
     "body": ["yield* _($0)"],
     "description": "Yield generator calling _()"
+  },
+  "Pure Comment": {
+    "prefix": "// pure",
+    "body": ["\n/* #__PURE__ */\n"],
+    "description": "Pure comment"
   }
 }

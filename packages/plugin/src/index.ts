@@ -176,7 +176,8 @@ export default function bundle(
 
           if (
             ts.isCallExpression(node) &&
-            ts.isPropertyAccessExpression(node.expression)
+            (ts.isPropertyAccessExpression(node.expression) ||
+              ts.isElementAccessExpression(node.expression))
           ) {
             const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
             let ets_method: string | undefined
@@ -189,10 +190,9 @@ export default function bundle(
 
             if (ets_method === "pipe") {
               return ts.visitNode(
-                factory.createCallExpression(
-                  node.arguments[0],
-                  [],
-                  [node.expression.expression]
+                node.arguments.reduce(
+                  (x, f) => factory.createCallExpression(f, [], [x]),
+                  node.expression.expression
                 ),
                 processNode
               )
@@ -287,8 +287,17 @@ export default function bundle(
               }
             })
 
-            if (ets_optimize && ets_optimize === "identity") {
+            if (ets_optimize === "identity") {
               return ts.visitNode(node.arguments[0], processNode)
+            }
+
+            if (ets_optimize === "pipe") {
+              return ts.visitNode(
+                node.arguments.reduce((x, f) =>
+                  factory.createCallExpression(f, [], [x])
+                ),
+                processNode
+              )
             }
 
             if (ets_static) {
@@ -385,8 +394,17 @@ export default function bundle(
             }
           }
 
-          if (ts.isPropertyAccessExpression(node)) {
-            const tags = checker.getSymbolAtLocation(node)?.getJsDocTags() || []
+          if (
+            ts.isPropertyAccessExpression(node) ||
+            ts.isElementAccessExpression(node)
+          ) {
+            const tags =
+              checker
+                .getSymbolAtLocation(
+                  ts.isPropertyAccessExpression(node) ? node : node.argumentExpression
+                )
+                ?.getJsDocTags() || []
+
             let ets_static: string | undefined
 
             tags.forEach((tag) => {
@@ -479,8 +497,6 @@ function getExported(
         (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword
       ) !== -1
     ) {
-      const tags = ts.getJSDocTags(node)
-
       exported.set(exportId(module, node.name.text), node.name)
     }
     if (

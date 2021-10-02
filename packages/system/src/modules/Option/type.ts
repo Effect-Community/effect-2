@@ -24,7 +24,9 @@ export const registerOptionStaticOp =
   polyfiller<$OptionStaticOps>($Option)
 
 export namespace $Option {
-  export type _OutOf<T> = [T] extends [
+  export type Option<A> = $Option<A>
+
+  export type _A<T> = [T] extends [
     {
       readonly [_Internal]: {
         readonly [_A]: () => infer A

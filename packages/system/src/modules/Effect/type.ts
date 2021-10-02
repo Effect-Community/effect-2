@@ -1,5 +1,4 @@
 import { polyfiller } from "../Utils/polyfiller"
-import { proxyAccess } from "../Utils/proxyAccess"
 import {
   IEffectAsync,
   IEffectTotal,
@@ -49,11 +48,12 @@ export const registerEffectStaticOp =
   polyfiller<$EffectStaticOps>($Effect)
 
 export declare namespace $Effect {
+  export type Effect<R, E, A> = $Effect<R, E, A>
   export type IO<A> = $Effect<unknown, never, A>
   export type RIO<R, A> = $Effect<R, never, A>
   export type EIO<E, A> = $Effect<unknown, E, A>
 
-  export type _EnvOf<T> = [T] extends [
+  export type _R<T> = [T] extends [
     {
       readonly [_Internal]: {
         readonly [_R]: (_R: infer R) => void
@@ -63,7 +63,7 @@ export declare namespace $Effect {
     ? R
     : never
 
-  export type _ErrOf<T> = [T] extends [
+  export type _E<T> = [T] extends [
     {
       readonly [_Internal]: {
         readonly [_E]: () => infer E
@@ -73,7 +73,7 @@ export declare namespace $Effect {
     ? E
     : never
 
-  export type _OutOf<T> = [T] extends [
+  export type _A<T> = [T] extends [
     {
       readonly [_Internal]: {
         readonly [_A]: () => infer A

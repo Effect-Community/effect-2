@@ -4,8 +4,8 @@
   "scripts": {
     "ci": "yarn clean && yarn build && yarn madge && yarn dist",
     "build": "ultra -r -b yarn ets:build",
-    "dist": "ultra -r -b dist",
-    "madge": "ultra -r -b yarn ets:madge",
+    "dist": "ultra -r dist",
+    "madge": "ultra -r yarn ets:madge",
     "watch": "yarn ets:build -w",
     "clean": "ultra -r yarn ets:clean",
     "ets:build": "cd $INIT_CWD && ttsc -b tsconfig.build.json",

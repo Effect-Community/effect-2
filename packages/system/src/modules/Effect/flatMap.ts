@@ -10,7 +10,8 @@ declare module "./type" {
      */
     flatMap<R, E, A, R1, E1, B>(
       this: $Effect<R, E, A>,
-      f: (a: A) => $Effect<R1, E1, B>
+      f: (a: A) => $Effect<R1, E1, B>,
+      __ets_trace?: string | undefined
     ): $Effect<R & R1, E | E1, B>
   }
   interface $EffectStaticOps {
@@ -19,17 +20,19 @@ declare module "./type" {
      * @ets_unpipe flatMap_
      */
     flatMap<A, R1, E1, B>(
-      f: (a: A) => $Effect<R1, E1, B>
+      f: (a: A) => $Effect<R1, E1, B>,
+      __ets_trace?: string | undefined
     ): <R, E>(self: $Effect<R, E, A>) => $Effect<R & R1, E | E1, B>
   }
 }
 
-export const flatMap_: $EffectOps["flatMap"] = function (f) {
+export const flatMap_: $EffectOps["flatMap"] = function (f, trace) {
+  console.log(trace)
   return unsafeCoerce(new IFlatMap(unsafeCoerce(this), unsafeCoerce(f)))
 }
 
-export const flatMap: $EffectStaticOps["flatMap"] = function (f) {
-  return (self) => self.flatMap(f)
+export const flatMap: $EffectStaticOps["flatMap"] = function (f, trace) {
+  return (self) => self.flatMap(f, trace)
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {

@@ -82,7 +82,8 @@ export default function bundle(
 
         function processNode(node: ts.Node): ts.Node {
           if (ts.isCallExpression(node)) {
-            const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
+            const sig = checker.getResolvedSignature(node)
+            const tags = sig?.getJsDocTags() || []
 
             let ets_prepend_trace = false
 
@@ -98,6 +99,17 @@ export default function bundle(
                 node.expression,
                 [],
                 [getTrace(node.expression), ...node.arguments]
+              )
+            } else if (
+              sig &&
+              node.arguments.length === sig.parameters.length - 1 &&
+              sig.parameters[sig.parameters.length - 1].name === "__ets_trace"
+            ) {
+              node = factory.updateCallExpression(
+                node,
+                node.expression,
+                [],
+                [...node.arguments, getTrace(node.expression)]
               )
             }
           }
@@ -129,6 +141,22 @@ export default function bundle(
             }
 
             if (ets_unpipe) {
+              const sig = checker.getResolvedSignature(node.expression)
+              let expr = node.expression
+
+              if (
+                sig &&
+                expr.arguments.length === sig.parameters.length - 1 &&
+                sig.parameters[sig.parameters.length - 1].name === "__ets_trace"
+              ) {
+                expr = factory.updateCallExpression(
+                  expr,
+                  expr.expression,
+                  [],
+                  [...expr.arguments, getTrace(expr.expression)]
+                )
+              }
+
               if (exported.has(ets_unpipe)) {
                 const method = exported.get(ets_unpipe)!
 
@@ -139,7 +167,7 @@ export default function bundle(
                       factory.createIdentifier("call")
                     ),
                     [],
-                    [...node.arguments, ...node.expression.arguments]
+                    [...node.arguments, ...expr.arguments]
                   ),
                   processNode,
                   ctx
@@ -160,7 +188,7 @@ export default function bundle(
                       factory.createIdentifier("call")
                     ),
                     [],
-                    [...node.arguments, ...node.expression.arguments]
+                    [...node.arguments, ...expr.arguments]
                   ),
                   processNode,
                   ctx
@@ -541,7 +569,15 @@ export default function bundle(
                     filePathId,
                     undefined,
                     undefined,
-                    factory.createStringLiteral(normalize(sourceFile.fileName))
+                    factory.createStringLiteral(
+                      `${
+                        matchingModules[matchingModules.length - 1].module
+                      }: ${normalize(
+                        sourceFile.fileName.slice(
+                          matchingModules[matchingModules.length - 1].base.length
+                        )
+                      )}`
+                    )
                   )
                 ],
                 ts.NodeFlags.Const

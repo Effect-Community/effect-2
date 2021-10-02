@@ -8,11 +8,12 @@ declare module "./type" {
     /**
      * @ets_static succeed from "@effect-ts/system/modules/Effect/succeed"
      */
-    succeed<A>(thunk: () => A): $Effect.IO<A>
+    succeed<A>(thunk: () => A, __ets_trace?: string): $Effect.IO<A>
   }
 }
 
-export const succeed: $EffectStaticOps["succeed"] = function (thunk) {
+export const succeed: $EffectStaticOps["succeed"] = function (thunk, trace) {
+  console.log(trace)
   return unsafeCoerce(new ISucceed(thunk))
 }
 

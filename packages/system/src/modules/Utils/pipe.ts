@@ -11,6 +11,27 @@ export interface Pipe {
    * @ets_method pipe
    */
   pipe<A, B, C, D>(this: A, ab: (a: A) => B, bc: (a: B) => C, cd: (c: C) => D): D
+  /**
+   * @ets_method pipe
+   */
+  pipe<A, B, C, D, E>(
+    this: A,
+    ab: (a: A) => B,
+    bc: (a: B) => C,
+    cd: (c: C) => D,
+    de: (c: D) => E
+  ): E
+  /**
+   * @ets_method pipe
+   */
+  pipe<A, B, C, D, E, F>(
+    this: A,
+    ab: (a: A) => B,
+    bc: (a: B) => C,
+    cd: (c: C) => D,
+    de: (c: D) => E,
+    ef: (c: E) => F
+  ): F
 }
 
 export function __pipe(this: any): any {

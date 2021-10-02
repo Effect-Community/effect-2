@@ -31,7 +31,7 @@ declare module "./type" {
  */
 export const flatMap_: $EffectOps["flatMap"] = function (f, trace) {
   console.log(trace)
-  return unsafeCoerce(new IFlatMap(unsafeCoerce(this), unsafeCoerce(f)))
+  return unsafeCoerce(new IFlatMap(unsafeCoerce(this), unsafeCoerce(f), trace))
 }
 
 /**

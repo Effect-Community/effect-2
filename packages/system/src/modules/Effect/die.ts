@@ -16,8 +16,8 @@ declare module "./type" {
 /**
  * @ets_trace off
  */
-export const die: $EffectStaticOps["die"] = function (thunk) {
-  return unsafeCoerce(new IFail(() => new IDie(thunk())))
+export const die: $EffectStaticOps["die"] = function (thunk, trace) {
+  return unsafeCoerce(new IFail(() => new IDie(thunk()), trace))
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {

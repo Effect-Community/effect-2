@@ -17,7 +17,7 @@ declare module "./type" {
  */
 export const succeed: $EffectStaticOps["succeed"] = function (thunk, trace) {
   console.log(trace)
-  return unsafeCoerce(new ISucceed(thunk))
+  return unsafeCoerce(new ISucceed(thunk, trace))
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {

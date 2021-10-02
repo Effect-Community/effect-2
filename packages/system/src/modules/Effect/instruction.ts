@@ -1,4 +1,4 @@
-import type { $Cause } from "./Cause/type.js"
+import type { $Cause } from "../Cause/type.js"
 
 /**
   private[zio] final class FlatMap[R, E, A0, A](val zio: ZIO[R, E, A0], val k: A0 => ZIO[R, E, A])

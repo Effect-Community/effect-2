@@ -1,5 +1,5 @@
+import { IDie } from "../Cause/type.js"
 import { unsafeCoerce } from "../Utils/coerce.js"
-import { IDie } from "./Cause/type.js"
 import { IFail } from "./instruction.js"
 import type { $EffectStaticOps } from "./type.js"
 import { registerEffectStaticOp } from "./type.js"

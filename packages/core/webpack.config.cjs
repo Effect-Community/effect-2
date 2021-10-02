@@ -14,7 +14,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      ETS_PLUGIN: JSON.stringify(false)
+      ETS_PLUGIN: JSON.stringify(true)
     })
   ]
 }

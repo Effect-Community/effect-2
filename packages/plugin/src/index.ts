@@ -1,3 +1,4 @@
+import * as fs from "fs"
 import * as path from "path"
 import * as ts from "typescript"
 
@@ -422,6 +423,52 @@ export default function bundle(
         const imports: ts.ImportDeclaration[] = []
 
         modules.forEach((id, mod) => {
+          let localPath = mod
+          if (mod.startsWith(matchingModules[matchingModules.length - 1].module)) {
+            const modulePath = `${
+              matchingModules[matchingModules.length - 1].base
+            }${mod.substr(matchingModules[matchingModules.length - 1].module.length)}`
+
+            const filePath = `${modulePath}.ts`
+            const filePathTsx = `${modulePath}.tsx`
+            const indexPath = `${modulePath}/index.ts`
+            const indexPathTsx = `${modulePath}/index.tsx`
+
+            if (fs.existsSync(filePath)) {
+              localPath = path.relative(
+                path.join(sourceFile.fileName, "../"),
+                `${modulePath}.js`
+              )
+              if (!localPath.startsWith(".")) {
+                localPath = `./${localPath}`
+              }
+            }
+            if (fs.existsSync(filePathTsx)) {
+              localPath = path.relative(
+                path.join(sourceFile.fileName, "../"),
+                `${modulePath}.jsx`
+              )
+              if (!localPath.startsWith(".")) {
+                localPath = `./${localPath}`
+              }
+            } else if (fs.existsSync(indexPath)) {
+              localPath = path.relative(
+                path.join(sourceFile.fileName, "../"),
+                `${modulePath}/index.js`
+              )
+              if (!localPath.startsWith(".")) {
+                localPath = `./${localPath}`
+              }
+            } else if (fs.existsSync(indexPathTsx)) {
+              localPath = path.relative(
+                path.join(sourceFile.fileName, "../"),
+                `${modulePath}/index.jsx`
+              )
+              if (!localPath.startsWith(".")) {
+                localPath = `./${localPath}`
+              }
+            }
+          }
           imports.push(
             factory.createImportDeclaration(
               undefined,
@@ -431,7 +478,7 @@ export default function bundle(
                 undefined,
                 factory.createNamespaceImport(id)
               ),
-              factory.createStringLiteral(mod)
+              factory.createStringLiteral(localPath)
             )
           )
         })

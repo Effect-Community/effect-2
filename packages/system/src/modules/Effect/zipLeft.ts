@@ -8,14 +8,16 @@ declare module "./type" {
      */
     zipLeft<R, E, A, R1, E1, B>(
       this: $Effect<R, E, A>,
-      that: $Effect<R1, E1, B>
+      that: $Effect<R1, E1, B>,
+      __ets_trace?: string
     ): $Effect<R & R1, E | E1, A>
     /**
      * @ets_method zipLeft_ from "@effect-ts/system/modules/Effect/zipLeft"
      */
     "<*"<R, E, A, R1, E1, B>(
       this: $Effect<R, E, A>,
-      that: $Effect<R1, E1, B>
+      that: $Effect<R1, E1, B>,
+      __ets_trace?: string
     ): $Effect<R & R1, E | E1, A>
   }
   interface $EffectStaticOps {
@@ -24,17 +26,24 @@ declare module "./type" {
      * @ets_unpipe zipLeft_
      */
     zipLeft<R1, E1, B>(
-      that: $Effect<R1, E1, B>
+      that: $Effect<R1, E1, B>,
+      __ets_trace?: string
     ): <R, E, A>(self: $Effect<R, E, A>) => $Effect<R & R1, E | E1, A>
   }
 }
 
-export const zipLeft_: $EffectOps["zipLeft"] = function (f) {
-  return this.flatMap((a) => f.map(() => a))
+/**
+ * @ets_trace off
+ */
+export const zipLeft_: $EffectOps["zipLeft"] = function (f, trace) {
+  return this.flatMap((a) => f.map(() => a), trace)
 }
 
-export const zipLeft: $EffectStaticOps["zipLeft"] = function (f) {
-  return (self) => self.zipLeft(f)
+/**
+ * @ets_trace off
+ */
+export const zipLeft: $EffectStaticOps["zipLeft"] = function (f, trace) {
+  return (self) => self.zipLeft(f, trace)
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {

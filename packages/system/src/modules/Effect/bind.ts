@@ -11,7 +11,8 @@ declare module "./type" {
     bind<R, E, A extends {}, K extends string, R1, E1, B>(
       this: $Effect<R, E, A>,
       k: K & (K extends keyof A ? [`key ${K} already used`] : K),
-      f: (a: A) => $Effect<R1, E1, B>
+      f: (a: A) => $Effect<R1, E1, B>,
+      __ets_trace?: string
     ): $Effect<R & R1, E | E1, $TypeUtils.Flat<A & { readonly [k in K]: B }>>
   }
   interface $EffectStaticOps {
@@ -21,21 +22,29 @@ declare module "./type" {
      */
     bind<A extends {}, K extends string, R1, E1, B>(
       k: K & (K extends keyof A ? [`key ${K} already used`] : K),
-      f: (a: A) => $Effect<R1, E1, B>
+      f: (a: A) => $Effect<R1, E1, B>,
+      __ets_trace?: string
     ): <R, E>(
       self: $Effect<R, E, A>
     ) => $Effect<R & R1, E | E1, $TypeUtils.Flat<A & { readonly [k in K]: B }>>
   }
 }
 
-export const bind_: $EffectOps["bind"] = function (k, f) {
-  return this.flatMap((a) =>
-    f(a).map((b) => unsafeCoerce(Object.assign({}, a, { [k]: b })))
+/**
+ * @ets_trace off
+ */
+export const bind_: $EffectOps["bind"] = function (k, f, trace) {
+  return this.flatMap(
+    (a) => f(a).map((b) => unsafeCoerce(Object.assign({}, a, { [k]: b }))),
+    trace
   )
 }
 
-export const bind: $EffectStaticOps["bind"] = function (k, f) {
-  return (self) => self.bind(k as any, f) as any
+/**
+ * @ets_trace off
+ */
+export const bind: $EffectStaticOps["bind"] = function (k, f, trace) {
+  return (self) => self.bind(k as any, f, trace) as any
 }
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {

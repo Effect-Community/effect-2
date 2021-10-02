@@ -12,6 +12,9 @@ declare module "./type" {
   }
 }
 
+/**
+ * @ets_trace off
+ */
 export const succeed: $EffectStaticOps["succeed"] = function (thunk, trace) {
   console.log(trace)
   return unsafeCoerce(new ISucceed(thunk))

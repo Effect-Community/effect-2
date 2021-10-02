@@ -26,11 +26,17 @@ declare module "./type" {
   }
 }
 
+/**
+ * @ets_trace off
+ */
 export const flatMap_: $EffectOps["flatMap"] = function (f, trace) {
   console.log(trace)
   return unsafeCoerce(new IFlatMap(unsafeCoerce(this), unsafeCoerce(f)))
 }
 
+/**
+ * @ets_trace off
+ */
 export const flatMap: $EffectStaticOps["flatMap"] = function (f, trace) {
   return (self) => self.flatMap(f, trace)
 }

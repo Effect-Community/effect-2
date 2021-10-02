@@ -18,5 +18,10 @@
     "prefix": "// pure",
     "body": ["\n/* #__PURE__ */\n"],
     "description": "Pure comment"
+  },
+  "Trace Off Comment": {
+    "prefix": "// trace",
+    "body": ["\n/**\n* @ets_trace off\n*/"],
+    "description": "Trace off comment"
   }
 }

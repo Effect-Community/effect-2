@@ -9,10 +9,13 @@ declare module "./type" {
     /**
      * @ets_static die from "@effect-ts/system/modules/Effect/die"
      */
-    die<E>(thunk: () => E): $Effect<unknown, never, never>
+    die<E>(thunk: () => E, __ets_trace?: string): $Effect<unknown, never, never>
   }
 }
 
+/**
+ * @ets_trace off
+ */
 export const die: $EffectStaticOps["die"] = function (thunk) {
   return unsafeCoerce(new IFail(() => new IDie(thunk())))
 }

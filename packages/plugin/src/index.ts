@@ -80,419 +80,440 @@ export default function bundle(
           )
         }
 
-        function processNode(node: ts.Node): ts.Node {
-          if (ts.isCallExpression(node)) {
-            const sig = checker.getResolvedSignature(node)
-            const tags = sig?.getJsDocTags() || []
-
-            let ets_prepend_trace = false
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_prepend_trace") {
-                ets_prepend_trace = true
-              }
-            })
-
-            if (ets_prepend_trace) {
-              node = factory.updateCallExpression(
-                node,
-                node.expression,
-                [],
-                [getTrace(node.expression), ...node.arguments]
-              )
-            } else if (
-              sig &&
-              node.arguments.length === sig.parameters.length - 1 &&
-              sig.parameters[sig.parameters.length - 1].name === "__ets_trace"
+        function processNode(inTracingRegion: boolean) {
+          return function (node: ts.Node): ts.Node {
+            if (
+              ts.isFunctionExpression(node) ||
+              ts.isVariableStatement(node) ||
+              ts.isFunctionDeclaration(node)
             ) {
-              node = factory.updateCallExpression(
-                node,
-                node.expression,
-                [],
-                [...node.arguments, getTrace(node.expression)]
-              )
-            }
-          }
-
-          if (
-            ts.isCallExpression(node) &&
-            ts.isCallExpression(node.expression) &&
-            node.arguments.length === 1
-          ) {
-            const tags =
-              checker.getResolvedSignature(node.expression)?.getJsDocTags() || []
-
-            let ets_static: string | undefined
-            let ets_unpipe: string | undefined
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
-              }
-              if (tag.name === "ets_unpipe" && tag.text) {
-                ets_unpipe = tag.text.map((_) => _.text).join(" ")
-              }
-            })
-
-            if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
-              const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-
-              ets_unpipe = `${ets_unpipe} from "${module}"`
-            }
-
-            if (ets_unpipe) {
-              const sig = checker.getResolvedSignature(node.expression)
-              let expr = node.expression
-
               if (
+                ts.getAllJSDocTags(
+                  node,
+                  (_): _ is ts.JSDocTag =>
+                    _.tagName.escapedText === "ets_trace" && _.comment === "off"
+                ).length > 0
+              ) {
+                return ts.visitEachChild(node, processNode(false), ctx)
+              }
+            }
+            if (ts.isCallExpression(node) && inTracingRegion) {
+              const sig = checker.getResolvedSignature(node)
+              const tags = sig?.getJsDocTags() || []
+
+              let ets_prepend_trace = false
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_prepend_trace") {
+                  ets_prepend_trace = true
+                }
+              })
+
+              if (ets_prepend_trace) {
+                node = factory.updateCallExpression(
+                  node,
+                  node.expression,
+                  [],
+                  [getTrace(node.expression), ...node.arguments]
+                )
+              } else if (
                 sig &&
-                expr.arguments.length === sig.parameters.length - 1 &&
+                node.arguments.length === sig.parameters.length - 1 &&
                 sig.parameters[sig.parameters.length - 1].name === "__ets_trace"
               ) {
-                expr = factory.updateCallExpression(
-                  expr,
-                  expr.expression,
+                node = factory.updateCallExpression(
+                  node,
+                  node.expression,
                   [],
-                  [...expr.arguments, getTrace(expr.expression)]
-                )
-              }
-
-              if (exported.has(ets_unpipe)) {
-                const method = exported.get(ets_unpipe)!
-
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      method,
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    [...node.arguments, ...expr.arguments]
-                  ),
-                  processNode,
-                  ctx
-                )
-              } else {
-                const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(id, fn),
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    [...node.arguments, ...expr.arguments]
-                  ),
-                  processNode,
-                  ctx
+                  [...node.arguments, getTrace(node.expression)]
                 )
               }
             }
-          }
-
-          if (
-            ts.isCallExpression(node) &&
-            (ts.isPropertyAccessExpression(node.expression) ||
-              ts.isElementAccessExpression(node.expression))
-          ) {
-            const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
-            let ets_method: string | undefined
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_method" && tag.text) {
-                ets_method = tag.text.map((_) => _.text).join(" ")
-              }
-            })
-
-            if (ets_method === "pipe") {
-              return ts.visitNode(
-                node.arguments.reduce(
-                  (x, f) => factory.createCallExpression(f, [], [x]),
-                  node.expression.expression
-                ),
-                processNode
-              )
-            }
-
-            if (ets_method) {
-              if (exported.has(ets_method)) {
-                const method = exported.get(ets_method)!
-
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      method,
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    [node.expression.expression, ...node.arguments]
-                  ),
-                  processNode,
-                  ctx
-                )
-              } else {
-                const [, fn, module] = ets_method.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(id, fn),
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    [node.expression.expression, ...node.arguments]
-                  ),
-                  processNode,
-                  ctx
-                )
-              }
-            }
-          }
-
-          if (ts.isBlock(node)) {
-            return ts.visitEachChild(
-              factory.updateBlock(
-                node,
-                node.statements.filter((statement) => {
-                  if (
-                    ts.isExpressionStatement(statement) &&
-                    ts.isCallExpression(statement.expression)
-                  ) {
-                    const tags =
-                      checker
-                        .getResolvedSignature(statement.expression)
-                        ?.getJsDocTags() || []
-
-                    let ets_optimize: string | undefined
-
-                    tags.forEach((tag) => {
-                      if (tag.name === "ets_optimize" && tag.text) {
-                        ets_optimize = tag.text.map((_) => _.text).join(" ")
-                      }
-                    })
-
-                    if (ets_optimize && ets_optimize === "remove") {
-                      return false
-                    }
-                  }
-                  return true
-                })
-              ),
-              processNode,
-              ctx
-            )
-          }
-
-          if (ts.isCallExpression(node)) {
-            const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
-            let ets_static: string | undefined
-            let ets_optimize: string | undefined
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
-              }
-              if (tag.name === "ets_optimize" && tag.text) {
-                ets_optimize = tag.text.map((_) => _.text).join(" ")
-              }
-            })
-
-            if (ets_optimize === "identity") {
-              const created = ts.visitNode(node.arguments[0], processNode)
-
-              if (ts.isCallExpression(created)) {
-                return factory.updateCallExpression(
-                  node,
-                  created.expression,
-                  created.typeArguments,
-                  created.arguments
-                )
-              }
-
-              return created
-            }
-
-            if (ets_optimize === "pipe") {
-              const created = ts.visitNode(
-                node.arguments.reduce((x, f) =>
-                  factory.createCallExpression(f, [], [x])
-                ),
-                processNode
-              )
-
-              if (ts.isCallExpression(created)) {
-                return factory.updateCallExpression(
-                  node,
-                  created.expression,
-                  created.typeArguments,
-                  created.arguments
-                )
-              }
-
-              return created
-            }
-
-            if (ets_static) {
-              if (exported.has(ets_static)) {
-                const method = exported.get(ets_static)!
-
-                return ts.visitEachChild(
-                  factory.updateCallExpression(node, method, [], node.arguments),
-                  processNode,
-                  ctx
-                )
-              } else {
-                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return ts.visitEachChild(
-                  factory.updateCallExpression(
-                    node,
-                    factory.createPropertyAccessExpression(id, fn),
-                    [],
-                    node.arguments
-                  ),
-                  processNode,
-                  ctx
-                )
-              }
-            }
-          }
-
-          if (ts.isCallExpression(node)) {
-            const tags =
-              checker.getSymbolAtLocation(node.expression)?.getJsDocTags() || []
-
-            let ets_static: string | undefined
-            let ets_unpipe: string | undefined
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
-              }
-              if (tag.name === "ets_unpipe" && tag.text) {
-                ets_unpipe = tag.text.map((_) => _.text).join(" ")
-              }
-            })
-
-            if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
-              const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-
-              ets_unpipe = `${ets_unpipe} from "${module}"`
-            }
-
-            if (ets_unpipe) {
-              if (exported.has(ets_unpipe)) {
-                const method = exported.get(ets_unpipe)!
-
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      method,
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    node.arguments
-                  ),
-                  processNode,
-                  ctx
-                )
-              } else {
-                const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
-                }
-                return ts.visitEachChild(
-                  factory.createCallExpression(
-                    factory.createPropertyAccessExpression(
-                      factory.createPropertyAccessExpression(id, fn),
-                      factory.createIdentifier("call")
-                    ),
-                    [],
-                    node.arguments
-                  ),
-                  processNode,
-                  ctx
-                )
-              }
-            }
-          }
-
-          if (
-            ts.isPropertyAccessExpression(node) ||
-            ts.isElementAccessExpression(node)
-          ) {
-            const tags =
-              checker
-                .getSymbolAtLocation(
-                  ts.isPropertyAccessExpression(node) ? node : node.argumentExpression
-                )
-                ?.getJsDocTags() || []
-
-            let ets_static: string | undefined
-
-            tags.forEach((tag) => {
-              if (tag.name === "ets_static" && tag.text) {
-                ets_static = tag.text.map((_) => _.text).join(" ")
-              }
-            })
 
             if (
-              ets_static &&
-              !(
-                ts.isBinaryExpression(node.parent) &&
-                node.parent.left === node &&
-                node.parent.operatorToken.getText() === "="
-              )
+              ts.isCallExpression(node) &&
+              ts.isCallExpression(node.expression) &&
+              node.arguments.length === 1
             ) {
-              if (exported.has(ets_static)) {
-                const method = exported.get(ets_static)!
+              const tags =
+                checker.getResolvedSignature(node.expression)?.getJsDocTags() || []
 
-                return method
-              } else {
-                const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
-                let id: ts.Identifier
-                if (modules.has(module)) {
-                  id = modules.get(module)!
-                } else {
-                  id = factory.createUniqueName("module")
-                  modules.set(module, id)
+              let ets_static: string | undefined
+              let ets_unpipe: string | undefined
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_static" && tag.text) {
+                  ets_static = tag.text.map((_) => _.text).join(" ")
                 }
-                return ts.visitEachChild(
-                  factory.createPropertyAccessExpression(id, fn),
-                  processNode,
-                  ctx
-                )
+                if (tag.name === "ets_unpipe" && tag.text) {
+                  ets_unpipe = tag.text.map((_) => _.text).join(" ")
+                }
+              })
+
+              if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
+                const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
+
+                ets_unpipe = `${ets_unpipe} from "${module}"`
+              }
+
+              if (ets_unpipe) {
+                const sig = checker.getResolvedSignature(node.expression)
+                let expr = node.expression
+
+                if (
+                  sig &&
+                  inTracingRegion &&
+                  expr.arguments.length === sig.parameters.length - 1 &&
+                  sig.parameters[sig.parameters.length - 1].name === "__ets_trace"
+                ) {
+                  expr = factory.updateCallExpression(
+                    expr,
+                    expr.expression,
+                    [],
+                    [...expr.arguments, getTrace(expr.expression)]
+                  )
+                }
+
+                if (exported.has(ets_unpipe)) {
+                  const method = exported.get(ets_unpipe)!
+
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        method,
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      [...node.arguments, ...expr.arguments]
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                } else {
+                  const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
+                  let id: ts.Identifier
+                  if (modules.has(module)) {
+                    id = modules.get(module)!
+                  } else {
+                    id = factory.createUniqueName("module")
+                    modules.set(module, id)
+                  }
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(id, fn),
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      [...node.arguments, ...expr.arguments]
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                }
               }
             }
-          }
 
-          return ts.visitEachChild(node, processNode, ctx)
+            if (
+              ts.isCallExpression(node) &&
+              (ts.isPropertyAccessExpression(node.expression) ||
+                ts.isElementAccessExpression(node.expression))
+            ) {
+              const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
+              let ets_method: string | undefined
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_method" && tag.text) {
+                  ets_method = tag.text.map((_) => _.text).join(" ")
+                }
+              })
+
+              if (ets_method === "pipe") {
+                return ts.visitNode(
+                  node.arguments.reduce(
+                    (x, f) => factory.createCallExpression(f, [], [x]),
+                    node.expression.expression
+                  ),
+                  processNode(inTracingRegion)
+                )
+              }
+
+              if (ets_method) {
+                if (exported.has(ets_method)) {
+                  const method = exported.get(ets_method)!
+
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        method,
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      [node.expression.expression, ...node.arguments]
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                } else {
+                  const [, fn, module] = ets_method.match(/^(.*?) from "(.*?)"$/)!
+                  let id: ts.Identifier
+                  if (modules.has(module)) {
+                    id = modules.get(module)!
+                  } else {
+                    id = factory.createUniqueName("module")
+                    modules.set(module, id)
+                  }
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(id, fn),
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      [node.expression.expression, ...node.arguments]
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                }
+              }
+            }
+
+            if (ts.isBlock(node)) {
+              return ts.visitEachChild(
+                factory.updateBlock(
+                  node,
+                  node.statements.filter((statement) => {
+                    if (
+                      ts.isExpressionStatement(statement) &&
+                      ts.isCallExpression(statement.expression)
+                    ) {
+                      const tags =
+                        checker
+                          .getResolvedSignature(statement.expression)
+                          ?.getJsDocTags() || []
+
+                      let ets_optimize: string | undefined
+
+                      tags.forEach((tag) => {
+                        if (tag.name === "ets_optimize" && tag.text) {
+                          ets_optimize = tag.text.map((_) => _.text).join(" ")
+                        }
+                      })
+
+                      if (ets_optimize && ets_optimize === "remove") {
+                        return false
+                      }
+                    }
+                    return true
+                  })
+                ),
+                processNode(inTracingRegion),
+                ctx
+              )
+            }
+
+            if (ts.isCallExpression(node)) {
+              const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
+              let ets_static: string | undefined
+              let ets_optimize: string | undefined
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_static" && tag.text) {
+                  ets_static = tag.text.map((_) => _.text).join(" ")
+                }
+                if (tag.name === "ets_optimize" && tag.text) {
+                  ets_optimize = tag.text.map((_) => _.text).join(" ")
+                }
+              })
+
+              if (ets_optimize === "identity") {
+                const created = ts.visitNode(
+                  node.arguments[0],
+                  processNode(inTracingRegion)
+                )
+
+                if (ts.isCallExpression(created)) {
+                  return factory.updateCallExpression(
+                    node,
+                    created.expression,
+                    created.typeArguments,
+                    created.arguments
+                  )
+                }
+
+                return created
+              }
+
+              if (ets_optimize === "pipe") {
+                const created = ts.visitNode(
+                  node.arguments.reduce((x, f) =>
+                    factory.createCallExpression(f, [], [x])
+                  ),
+                  processNode(inTracingRegion)
+                )
+
+                if (ts.isCallExpression(created)) {
+                  return factory.updateCallExpression(
+                    node,
+                    created.expression,
+                    created.typeArguments,
+                    created.arguments
+                  )
+                }
+
+                return created
+              }
+
+              if (ets_static) {
+                if (exported.has(ets_static)) {
+                  const method = exported.get(ets_static)!
+
+                  return ts.visitEachChild(
+                    factory.updateCallExpression(node, method, [], node.arguments),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                } else {
+                  const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
+                  let id: ts.Identifier
+                  if (modules.has(module)) {
+                    id = modules.get(module)!
+                  } else {
+                    id = factory.createUniqueName("module")
+                    modules.set(module, id)
+                  }
+                  return ts.visitEachChild(
+                    factory.updateCallExpression(
+                      node,
+                      factory.createPropertyAccessExpression(id, fn),
+                      [],
+                      node.arguments
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                }
+              }
+            }
+
+            if (ts.isCallExpression(node)) {
+              const tags =
+                checker.getSymbolAtLocation(node.expression)?.getJsDocTags() || []
+
+              let ets_static: string | undefined
+              let ets_unpipe: string | undefined
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_static" && tag.text) {
+                  ets_static = tag.text.map((_) => _.text).join(" ")
+                }
+                if (tag.name === "ets_unpipe" && tag.text) {
+                  ets_unpipe = tag.text.map((_) => _.text).join(" ")
+                }
+              })
+
+              if (ets_static && ets_unpipe && !ets_unpipe.includes(" from ")) {
+                const [, , module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
+
+                ets_unpipe = `${ets_unpipe} from "${module}"`
+              }
+
+              if (ets_unpipe) {
+                if (exported.has(ets_unpipe)) {
+                  const method = exported.get(ets_unpipe)!
+
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        method,
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      node.arguments
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                } else {
+                  const [, fn, module] = ets_unpipe.match(/^(.*?) from "(.*?)"$/)!
+                  let id: ts.Identifier
+                  if (modules.has(module)) {
+                    id = modules.get(module)!
+                  } else {
+                    id = factory.createUniqueName("module")
+                    modules.set(module, id)
+                  }
+                  return ts.visitEachChild(
+                    factory.createCallExpression(
+                      factory.createPropertyAccessExpression(
+                        factory.createPropertyAccessExpression(id, fn),
+                        factory.createIdentifier("call")
+                      ),
+                      [],
+                      node.arguments
+                    ),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                }
+              }
+            }
+
+            if (
+              ts.isPropertyAccessExpression(node) ||
+              ts.isElementAccessExpression(node)
+            ) {
+              const tags =
+                checker
+                  .getSymbolAtLocation(
+                    ts.isPropertyAccessExpression(node) ? node : node.argumentExpression
+                  )
+                  ?.getJsDocTags() || []
+
+              let ets_static: string | undefined
+
+              tags.forEach((tag) => {
+                if (tag.name === "ets_static" && tag.text) {
+                  ets_static = tag.text.map((_) => _.text).join(" ")
+                }
+              })
+
+              if (
+                ets_static &&
+                !(
+                  ts.isBinaryExpression(node.parent) &&
+                  node.parent.left === node &&
+                  node.parent.operatorToken.getText() === "="
+                )
+              ) {
+                if (exported.has(ets_static)) {
+                  const method = exported.get(ets_static)!
+
+                  return method
+                } else {
+                  const [, fn, module] = ets_static.match(/^(.*?) from "(.*?)"$/)!
+                  let id: ts.Identifier
+                  if (modules.has(module)) {
+                    id = modules.get(module)!
+                  } else {
+                    id = factory.createUniqueName("module")
+                    modules.set(module, id)
+                  }
+                  return ts.visitEachChild(
+                    factory.createPropertyAccessExpression(id, fn),
+                    processNode(inTracingRegion),
+                    ctx
+                  )
+                }
+              }
+            }
+
+            return ts.visitEachChild(node, processNode(inTracingRegion), ctx)
+          }
         }
 
-        let processed = ts.visitNode(sourceFile, processNode)
+        let processed = ts.visitNode(sourceFile, processNode(true))
 
         const imports: ts.ImportDeclaration[] = []
 

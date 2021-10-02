@@ -33,6 +33,9 @@ declare module "./type" {
   }
 }
 
+/**
+ * @ets_trace off
+ */
 export const tuple: $EffectStaticOps["tuple"] = function (...args) {
   const [trace, effects] = traceFrom(args)
   console.log(trace)

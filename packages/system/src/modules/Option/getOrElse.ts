@@ -1,6 +1,6 @@
-import { identity } from "../Utils/identity"
-import type { $OptionOps, $OptionStaticOps } from "./type"
-import { registerOptionOp, registerOptionStaticOp } from "./type"
+import { identity } from "../Utils/identity.js"
+import type { $OptionOps, $OptionStaticOps } from "./type.js"
+import { registerOptionOp, registerOptionStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $OptionOps {

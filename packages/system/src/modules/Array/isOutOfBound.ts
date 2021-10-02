@@ -1,5 +1,5 @@
-import type { $ArrayOps, $ArrayStaticOps } from "./type"
-import { registerArrayOp, registerArrayStaticOp } from "./type"
+import type { $ArrayOps, $ArrayStaticOps } from "./type.js"
+import { registerArrayOp, registerArrayStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $ArrayOps {

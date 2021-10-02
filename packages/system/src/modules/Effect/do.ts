@@ -1,5 +1,5 @@
-import type { $EffectStaticOps } from "./type"
-import { $Effect, registerEffectStaticOp } from "./type"
+import type { $EffectStaticOps } from "./type.js"
+import { $Effect, registerEffectStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $EffectStaticOps {

@@ -7,10 +7,10 @@
     "outDir": "lib",
     "rootDir": "src",
     "plugins": [
-      {
-        "transform": "../plugin/src/index.ts",
-        "modules": [{ "module": "@effect-ts/core", "src": "./src" }]
-      }
+      //{
+      //  "transform": "../plugin/src/index.ts",
+      //  "modules": [{ "module": "@effect-ts/core", "src": "./src" }]
+      //}
     ]
   },
   "include": ["src/**/*.ts"]

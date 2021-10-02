@@ -1,6 +1,5 @@
-import { unsafeCoerce } from "../Utils/coerce"
-import type { $OptionOps, $OptionStaticOps } from "./type"
-import { registerOptionOp, registerOptionStaticOp } from "./type"
+import type { $OptionOps, $OptionStaticOps } from "./type.js"
+import { registerOptionOp, registerOptionStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $OptionOps {

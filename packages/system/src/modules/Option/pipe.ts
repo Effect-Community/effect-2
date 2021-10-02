@@ -1,6 +1,6 @@
-import type { Pipe } from "../Utils/pipe"
-import { __pipe } from "../Utils/pipe"
-import { registerOptionOp } from "./type"
+import type { Pipe } from "../Utils/pipe.js"
+import { __pipe } from "../Utils/pipe.js"
+import { registerOptionOp } from "./type.js"
 
 declare module "./type" {
   interface $OptionOps extends Pipe {}

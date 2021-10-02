@@ -1,6 +1,5 @@
-import { unsafeCoerce } from "../Utils/coerce"
-import type { $EffectOps, $EffectStaticOps } from "./type"
-import { registerEffectOp, registerEffectStaticOp } from "./type"
+import type { $EffectOps, $EffectStaticOps } from "./type.js"
+import { registerEffectOp, registerEffectStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $EffectOps {

@@ -1,6 +1,6 @@
-import "./Array/get"
-import "./Array/of"
-import "./Array/pipe"
-import "./Array/isOutOfBound"
+import "./Array/get.js"
+import "./Array/of.js"
+import "./Array/pipe.js"
+import "./Array/isOutOfBound.js"
 
-export { $Array } from "./Array/type"
+export { $Array } from "./Array/type.js"

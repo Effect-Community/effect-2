@@ -1,6 +1,6 @@
-import type { _A, _Internal } from "../Effect/type"
-import { polyfiller } from "../Utils/polyfiller"
-import { INone, ISome } from "./instruction"
+import type { _A, _Internal } from "../Effect/type.js"
+import { polyfiller } from "../Utils/polyfiller.js"
+import { INone, ISome } from "./instruction.js"
 
 export declare const _OptionId: unique symbol
 

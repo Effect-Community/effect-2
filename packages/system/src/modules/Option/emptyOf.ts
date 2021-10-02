@@ -1,5 +1,5 @@
-import type { $OptionStaticOps } from "./type"
-import { $Option, registerOptionStaticOp } from "./type"
+import type { $OptionStaticOps } from "./type.js"
+import { $Option, registerOptionStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $OptionStaticOps {

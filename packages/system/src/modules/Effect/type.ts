@@ -1,4 +1,4 @@
-import { polyfiller } from "../Utils/polyfiller"
+import { polyfiller } from "../Utils/polyfiller.js"
 import {
   IEffectAsync,
   IEffectTotal,
@@ -8,7 +8,7 @@ import {
   ISucceed,
   ISuspend,
   ISuspendWith
-} from "./instruction"
+} from "./instruction.js"
 
 export declare const _Internal: unique symbol
 export declare const _R: unique symbol

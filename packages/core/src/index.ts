@@ -1,4 +1,4 @@
-import { O, pipe, T } from "./prelude"
+import { O, pipe, T } from "./prelude.js"
 
 function z(): T<unknown, never, number> {
   return pipe(

@@ -1,7 +1,7 @@
-import { constUndefined } from "../Utils/constUndefined"
-import { identity } from "../Utils/identity"
-import type { $OptionOps, $OptionStaticOps } from "./type"
-import { registerOptionOp, registerOptionStaticOp } from "./type"
+import { constUndefined } from "../Utils/constUndefined.js"
+import { identity } from "../Utils/identity.js"
+import type { $OptionOps, $OptionStaticOps } from "./type.js"
+import { registerOptionOp, registerOptionStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $OptionOps {

@@ -1,6 +1,6 @@
 import type { $Option } from "@effect-ts/system"
 
-import type { $OptionOps } from "./type"
+import type { $OptionOps } from "./type.js"
 
 export interface ISome<A> extends $OptionOps {}
 export class ISome<A> implements $Option.Some<A> {

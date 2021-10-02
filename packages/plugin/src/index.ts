@@ -5,7 +5,6 @@ export default function bundle(
   _program: ts.Program,
   _opts: {
     modules?: [{ src: string; module: string }]
-    transformModules?: boolean
   } = {}
 ) {
   const checker = _program.getTypeChecker()
@@ -17,8 +16,6 @@ export default function bundle(
       module,
       base: path.join(root, src)
     })) || []
-
-  const shouldPatchModules = _opts.transformModules !== false
 
   return {
     before(ctx: ts.TransformationContext) {
@@ -58,55 +55,6 @@ export default function bundle(
         const modules: Map<string, ts.Identifier> = new Map()
 
         function processNode(node: ts.Node): ts.Node {
-          if (
-            shouldPatchModules &&
-            relativeTo &&
-            ts.isImportDeclaration(node) &&
-            ((node.importClause && !node.importClause.isTypeOnly) ||
-              !node.importClause) &&
-            node.moduleSpecifier &&
-            ts.isStringLiteral(node.moduleSpecifier) &&
-            node.moduleSpecifier.text.startsWith(".")
-          ) {
-            return ts.visitEachChild(
-              factory.updateImportDeclaration(
-                node,
-                node.decorators,
-                node.modifiers,
-                node.importClause,
-                factory.createStringLiteral(
-                  path.join(relativeTo, node.moduleSpecifier.text)
-                )
-              ),
-              processNode,
-              ctx
-            )
-          }
-          if (
-            shouldPatchModules &&
-            relativeTo &&
-            ts.isExportDeclaration(node) &&
-            node.moduleSpecifier &&
-            ts.isStringLiteral(node.moduleSpecifier) &&
-            node.moduleSpecifier.text.startsWith(".") &&
-            !node.isTypeOnly
-          ) {
-            return ts.visitEachChild(
-              factory.updateExportDeclaration(
-                node,
-                node.decorators,
-                node.modifiers,
-                node.isTypeOnly,
-                node.exportClause,
-                factory.createStringLiteral(
-                  path.join(relativeTo, node.moduleSpecifier.text)
-                )
-              ),
-              processNode,
-              ctx
-            )
-          }
-
           if (
             ts.isCallExpression(node) &&
             ts.isCallExpression(node.expression) &&

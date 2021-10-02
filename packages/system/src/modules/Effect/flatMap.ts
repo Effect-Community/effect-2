@@ -1,7 +1,7 @@
-import { unsafeCoerce } from "../Utils/coerce"
-import { IFlatMap } from "./instruction"
-import type { $EffectOps, $EffectStaticOps } from "./type"
-import { registerEffectOp, registerEffectStaticOp } from "./type"
+import { unsafeCoerce } from "../Utils/coerce.js"
+import { IFlatMap } from "./instruction.js"
+import type { $EffectOps, $EffectStaticOps } from "./type.js"
+import { registerEffectOp, registerEffectStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $EffectOps {

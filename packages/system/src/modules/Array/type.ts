@@ -1,5 +1,5 @@
-import type { _A, _Internal } from "../Effect/type"
-import { polyfiller } from "../Utils/polyfiller"
+import type { _A, _Internal } from "../Effect/type.js"
+import { polyfiller } from "../Utils/polyfiller.js"
 
 declare global {
   interface ReadonlyArray<T> extends $ArrayOps {}

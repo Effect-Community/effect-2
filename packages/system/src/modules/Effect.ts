@@ -10,5 +10,7 @@ import "./Effect/pipe.js"
 import "./Effect/forever.js"
 import "./Effect/zipLeft.js"
 import "./Effect/zipRight.js"
+import "./Effect/die.js"
+import "./Effect/tuple.js"
 
 export { $Effect } from "./Effect/type.js"

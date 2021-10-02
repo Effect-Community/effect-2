@@ -2,6 +2,17 @@ import * as fs from "fs"
 import * as path from "path"
 import * as ts from "typescript"
 
+function normalize(path: string) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path)
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path) // eslint-disable-line no-control-regex
+
+  if (isExtendedLengthPath || hasNonAscii) {
+    return path
+  }
+
+  return path.replace(/\\/g, "/")
+}
+
 export default function bundle(
   _program: ts.Program,
   _opts: {
@@ -55,7 +66,42 @@ export default function bundle(
 
         const modules: Map<string, ts.Identifier> = new Map()
 
+        const filePathId = factory.createUniqueName("__ets_file_name")
+
+        let shouldAddTraceVar = false
+
+        function getTrace(node: ts.Node) {
+          shouldAddTraceVar = true
+          const nodeEnd = sourceFile.getLineAndCharacterOfPosition(node.getEnd())
+          return factory.createBinaryExpression(
+            filePathId,
+            ts.SyntaxKind.PlusToken,
+            factory.createStringLiteral(`:${nodeEnd.line + 1}:${nodeEnd.character + 1}`)
+          )
+        }
+
         function processNode(node: ts.Node): ts.Node {
+          if (ts.isCallExpression(node)) {
+            const tags = checker.getResolvedSignature(node)?.getJsDocTags() || []
+
+            let ets_prepend_trace = false
+
+            tags.forEach((tag) => {
+              if (tag.name === "ets_prepend_trace") {
+                ets_prepend_trace = true
+              }
+            })
+
+            if (ets_prepend_trace) {
+              node = factory.updateCallExpression(
+                node,
+                node.expression,
+                [],
+                [getTrace(node.expression), ...node.arguments]
+              )
+            }
+          }
+
           if (
             ts.isCallExpression(node) &&
             ts.isCallExpression(node.expression) &&
@@ -483,9 +529,30 @@ export default function bundle(
           )
         })
 
+        const globals = [] as ts.Statement[]
+
+        if (shouldAddTraceVar) {
+          globals.push(
+            factory.createVariableStatement(
+              undefined,
+              factory.createVariableDeclarationList(
+                [
+                  factory.createVariableDeclaration(
+                    filePathId,
+                    undefined,
+                    undefined,
+                    factory.createStringLiteral(normalize(sourceFile.fileName))
+                  )
+                ],
+                ts.NodeFlags.Const
+              )
+            )
+          )
+        }
+
         processed = factory.updateSourceFile(
           processed,
-          [...imports, ...processed.statements],
+          [...imports, ...globals, ...processed.statements],
           processed.isDeclarationFile,
           processed.referencedFiles,
           processed.typeReferenceDirectives,

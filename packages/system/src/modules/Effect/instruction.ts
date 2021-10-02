@@ -1,6 +1,13 @@
+import type { $Cause } from "./Cause/type.js"
+
 export class ISucceed {
   readonly _tag = "ISucceed"
   constructor(readonly effect: () => unknown) {}
+}
+
+export class IFail {
+  readonly _tag = "IFail"
+  constructor(readonly cause: () => $Cause<unknown>) {}
 }
 
 export class IFlatMap {
@@ -51,13 +58,11 @@ export class IEffectAsync {
   ) {}
 }
 
-type Cause<E> = {}
-
 export class IFold {
   readonly _tag = "IFold"
   constructor(
     readonly self: Instruction,
-    readonly failure: (error: Cause<unknown>) => Instruction,
+    readonly failure: (error: $Cause<unknown>) => Instruction,
     readonly apply: (result: unknown) => Instruction
   ) {}
 }
@@ -70,3 +75,4 @@ export type Instruction =
   | ISuspend
   | IEffectAsync
   | IFold
+  | IFail

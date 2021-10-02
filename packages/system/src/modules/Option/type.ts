@@ -4,14 +4,14 @@ import { INone, ISome } from "./instruction"
 
 export declare const _OptionId: unique symbol
 
-export interface $Option<A> extends $OptionOps {
+export type $Option<A> = $Option.Some<A> | $Option.None
+
+export interface $OptionOps {
   readonly [_Internal]: {
     readonly [_OptionId]: typeof _OptionId
-    readonly [_A]: () => A
   }
 }
 
-export interface $OptionOps {}
 export interface $OptionStaticOps {}
 export const $Option = {} as $OptionStaticOps
 
@@ -26,17 +26,14 @@ export const registerOptionStaticOp =
 export namespace $Option {
   export type Option<A> = $Option<A>
 
-  export interface Some<A> extends $Option<A> {
+  export interface None extends $OptionOps {
+    readonly _tag: "None"
+  }
+
+  export interface Some<A> extends $OptionOps {
+    readonly _tag: "Some"
     readonly value: A
   }
 
-  export type _A<T> = [T] extends [
-    {
-      readonly [_Internal]: {
-        readonly [_A]: () => infer A
-      }
-    }
-  ]
-    ? A
-    : never
+  export type _A<T> = [T] extends [Option<infer A>] ? A : never
 }

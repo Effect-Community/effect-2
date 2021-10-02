@@ -7,5 +7,6 @@ import "./Option/pipe"
 import "./Option/some"
 import "./Option/get"
 import "./Option/isSome"
+import "./Option/isNone"
 
 export { $Option } from "./Option/type"

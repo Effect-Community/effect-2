@@ -1,5 +1,4 @@
 import { unsafeCoerce } from "../Utils/coerce"
-import { ensureInstruction } from "./instruction"
 import type { $OptionOps, $OptionStaticOps } from "./type"
 import { registerOptionOp, registerOptionStaticOp } from "./type"
 
@@ -20,10 +19,9 @@ declare module "./type" {
 }
 
 export const fold_: $OptionOps["fold"] = function (onNone, onSome) {
-  ensureInstruction(this)
   switch (this._tag) {
     case "Some": {
-      return onSome(unsafeCoerce(this.value))
+      return onSome(this.value)
     }
     case "None": {
       return onNone()

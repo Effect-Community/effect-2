@@ -12,7 +12,9 @@ declare module "./type" {
   }
 }
 
-export const some: $OptionStaticOps["some"] = (a) => unsafeCoerce(new ISome(a))
+export const some: $OptionStaticOps["some"] = function (a) {
+  return new ISome(a)
+}
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
   registerOptionStaticOp("some")(some)

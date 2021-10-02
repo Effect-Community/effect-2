@@ -12,7 +12,7 @@ declare module "./type" {
   }
 }
 
-export const none: $OptionStaticOps["none"] = unsafeCoerce(new INone())
+export const none: $OptionStaticOps["none"] = new INone()
 
 if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
   registerOptionStaticOp("none")(none)

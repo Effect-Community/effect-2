@@ -2,10 +2,12 @@ import { O, pipe, T } from "./prelude"
 
 function z(): T<unknown, never, number> {
   return pipe(
-    T.succeed(() => 0),
-    T.map((x) => x + 1),
-    T.map((x) => x + 2)
-  )["*>"](T.succeed(() => 3))
+    T.do,
+    T.bind("x", () => T.succeed(() => 0)),
+    T.bind("y", () => T.succeed(() => 0)),
+    T.bind("z", ({ x, y }) => T.succeed(() => x + y)),
+    T.map(({ z }) => z)
+  )
 }
 
 function x(): O<number> {

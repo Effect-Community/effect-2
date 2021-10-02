@@ -15,5 +15,5 @@
       "@effect-ts/core/*": ["./packages/core/src/*"]
     }
   },
-  "include": ["**/*.ts"]
+  "exclude": ["packages/*/lib/**/*.ts", "node_modules/**/*.ts"]
 }

@@ -26,6 +26,10 @@ export function __pipe(this: any): any {
 /**
  * @ets_optimize pipe
  */
+export function pipe<A>(a: A): A
+/**
+ * @ets_optimize pipe
+ */
 export function pipe<A, B>(a: A, ab: (a: A) => B): B
 /**
  * @ets_optimize pipe
@@ -40,6 +44,27 @@ export function pipe<A, B, C, D>(
   bc: (a: B) => C,
   cd: (c: C) => D
 ): D
+/**
+ * @ets_optimize pipe
+ */
+export function pipe<A, B, C, D, E>(
+  a: A,
+  ab: (a: A) => B,
+  bc: (a: B) => C,
+  cd: (c: C) => D,
+  de: (c: D) => E
+): E
+/**
+ * @ets_optimize pipe
+ */
+export function pipe<A, B, C, D, E, F>(
+  a: A,
+  ab: (a: A) => B,
+  bc: (a: B) => C,
+  cd: (c: C) => D,
+  de: (c: D) => E,
+  ef: (c: E) => F
+): F
 export function pipe() {
   // eslint-disable-next-line prefer-rest-params
   let x = arguments[0]

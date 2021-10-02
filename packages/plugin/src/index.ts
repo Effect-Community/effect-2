@@ -288,16 +288,38 @@ export default function bundle(
             })
 
             if (ets_optimize === "identity") {
-              return ts.visitNode(node.arguments[0], processNode)
+              const created = ts.visitNode(node.arguments[0], processNode)
+
+              if (ts.isCallExpression(created)) {
+                return factory.updateCallExpression(
+                  node,
+                  created.expression,
+                  created.typeArguments,
+                  created.arguments
+                )
+              }
+
+              return created
             }
 
             if (ets_optimize === "pipe") {
-              return ts.visitNode(
+              const created = ts.visitNode(
                 node.arguments.reduce((x, f) =>
                   factory.createCallExpression(f, [], [x])
                 ),
                 processNode
               )
+
+              if (ts.isCallExpression(created)) {
+                return factory.updateCallExpression(
+                  node,
+                  created.expression,
+                  created.typeArguments,
+                  created.arguments
+                )
+              }
+
+              return created
             }
 
             if (ets_static) {
@@ -305,7 +327,7 @@ export default function bundle(
                 const method = exported.get(ets_static)!
 
                 return ts.visitEachChild(
-                  factory.createCallExpression(method, [], node.arguments),
+                  factory.updateCallExpression(node, method, [], node.arguments),
                   processNode,
                   ctx
                 )
@@ -319,7 +341,8 @@ export default function bundle(
                   modules.set(module, id)
                 }
                 return ts.visitEachChild(
-                  factory.createCallExpression(
+                  factory.updateCallExpression(
+                    node,
                     factory.createPropertyAccessExpression(id, fn),
                     [],
                     node.arguments

@@ -12,6 +12,6 @@ declare module "./type" {
 
 export const emptyOf: $OptionStaticOps["emptyOf"] = () => $Option.none
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionStaticOp("emptyOf")(emptyOf)
 }

@@ -13,6 +13,6 @@ declare module "./type" {
 
 export const none: $OptionStaticOps["none"] = new INone()
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionStaticOp("none")(none)
 }

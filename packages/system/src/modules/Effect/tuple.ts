@@ -42,6 +42,6 @@ export const tuple: $EffectStaticOps["tuple"] = function (...args) {
   return $Effect.die(() => new Error("Not Implemented"))
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectStaticOp("tuple")(tuple)
 }

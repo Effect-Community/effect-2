@@ -27,7 +27,7 @@ export const get: $OptionStaticOps["get"] = function (self) {
   return self.get()
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("get")(get_)
   registerOptionStaticOp("get")(get)
 }

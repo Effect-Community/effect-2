@@ -12,6 +12,6 @@ declare module "./type" {
 
 export const of: $ArrayStaticOps["of"] = (a) => [a]
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerArrayStaticOp("of")(of)
 }

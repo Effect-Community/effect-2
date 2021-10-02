@@ -15,6 +15,6 @@ export const some: $OptionStaticOps["some"] = function (a) {
   return new ISome(a)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionStaticOp("some")(some)
 }

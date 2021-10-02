@@ -26,7 +26,7 @@ export const get: $ArrayStaticOps["get"] = function (i) {
   return (self) => self.get(i)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerArrayOp("get")(get_)
   registerArrayStaticOp("get")(get)
 }

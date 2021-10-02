@@ -38,7 +38,7 @@ export const map: $EffectStaticOps["map"] = function (f, trace) {
   return (self) => self.map(f, trace)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("map")(map_)
   registerEffectStaticOp("map")(map)
 }

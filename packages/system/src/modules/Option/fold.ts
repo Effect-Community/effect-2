@@ -32,7 +32,7 @@ export const fold: $OptionStaticOps["fold"] = function (onNone, onSome) {
   return (self) => self.fold(onNone, onSome)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("fold")(fold_)
   registerOptionStaticOp("fold")(fold)
 }

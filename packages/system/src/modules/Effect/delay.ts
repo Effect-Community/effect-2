@@ -38,7 +38,7 @@ export const delay: $EffectStaticOps["delay"] = function (ms) {
   return (self) => self.delay(ms)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("delay")(delay_)
   registerEffectStaticOp("delay")(delay)
 }

@@ -25,7 +25,7 @@ export const isOutOfBound: $ArrayStaticOps["isOutOfBound"] = function (i) {
   return (self) => self.isOutOfBound(i)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerArrayOp("isOutOfBound")(isOutOfBound_)
   registerArrayStaticOp("isOutOfBound")(isOutOfBound)
 }

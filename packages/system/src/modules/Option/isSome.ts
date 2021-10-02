@@ -28,7 +28,7 @@ export const isSome: $OptionStaticOps["isSome"] = function (self) {
   return self.isSome()
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("isSome")(isSome_)
   registerOptionStaticOp("isSome")(isSome)
 }

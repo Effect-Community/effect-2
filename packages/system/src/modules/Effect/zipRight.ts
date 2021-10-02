@@ -46,7 +46,7 @@ export const zipRight: $EffectStaticOps["zipRight"] = function (f, trace) {
   return (self) => self.zipRight(f, trace)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("zipRight")(zipRight_)
   registerEffectOp("*>")(zipRight_)
   registerEffectStaticOp("zipRight")(zipRight)

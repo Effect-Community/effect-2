@@ -6,6 +6,6 @@ declare module "./type" {
   interface $OptionOps extends Pipe {}
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("pipe")(__pipe)
 }

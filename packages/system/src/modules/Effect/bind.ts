@@ -47,7 +47,9 @@ export const bind: $EffectStaticOps["bind"] = function (k, f, trace) {
   return (self) => self.bind(k as any, f, trace) as any
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("bind")(bind_)
   registerEffectStaticOp("bind")(bind)
+} else {
+  console.log("YES")
 }

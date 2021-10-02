@@ -6,6 +6,6 @@ declare module "./type" {
   interface $ArrayOps extends Pipe {}
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerArrayOp("pipe")(__pipe)
 }

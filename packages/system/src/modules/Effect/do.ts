@@ -14,6 +14,6 @@ export const do_: $EffectStaticOps["do"] =
   /* #__PURE__ */
   $Effect.succeed(() => ({}), void 0)
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectStaticOp("do")(do_)
 }

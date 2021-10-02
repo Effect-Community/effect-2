@@ -26,7 +26,7 @@ export const getOrElse: $OptionStaticOps["getOrElse"] = function (orElse) {
   return (self) => self.getOrElse(orElse)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("getOrElse")(getOrElse_)
   registerOptionStaticOp("getOrElse")(getOrElse)
 }

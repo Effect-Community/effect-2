@@ -20,6 +20,6 @@ export const die: $EffectStaticOps["die"] = function (thunk, trace) {
   return unsafeCoerce(new IFail(() => new IDie(thunk()), trace))
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectStaticOp("die")(die)
 }

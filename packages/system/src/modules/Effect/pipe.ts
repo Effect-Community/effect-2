@@ -6,6 +6,6 @@ declare module "./type" {
   interface $EffectOps extends Pipe {}
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("pipe")(__pipe)
 }

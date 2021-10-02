@@ -41,7 +41,7 @@ export const flatMap: $EffectStaticOps["flatMap"] = function (f, trace) {
   return (self) => self.flatMap(f, trace)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("flatMap")(flatMap_)
   registerEffectStaticOp("flatMap")(flatMap)
 }

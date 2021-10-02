@@ -25,7 +25,7 @@ export const flatMap: $OptionStaticOps["flatMap"] = function (f) {
   return (self) => self.flatMap(f)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerOptionOp("flatMap")(flatMap_)
   registerOptionStaticOp("flatMap")(flatMap)
 }

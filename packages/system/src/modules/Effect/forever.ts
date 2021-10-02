@@ -31,7 +31,7 @@ export const forever: $EffectStaticOps["forever"] = function (self, trace) {
   return self.forever(trace)
 }
 
-if (typeof ETS_PLUGIN === "undefined" || !ETS_PLUGIN) {
+if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
   registerEffectOp("forever")(forever_)
   registerEffectStaticOp("forever")(forever)
 }

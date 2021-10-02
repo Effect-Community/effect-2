@@ -607,9 +607,28 @@ export default function bundle(
           )
         }
 
+        const statements = [] as ts.Statement[]
+        let i = 0
+
+        while (
+          i < processed.statements.length &&
+          ts.isImportDeclaration(processed.statements[i])
+        ) {
+          statements.push(processed.statements[i])
+          i++
+        }
+
+        statements.push(...imports)
+        statements.push(...globals)
+
+        while (i < processed.statements.length) {
+          statements.push(processed.statements[i])
+          i++
+        }
+
         processed = factory.updateSourceFile(
           processed,
-          [...imports, ...globals, ...processed.statements],
+          statements,
           processed.isDeclarationFile,
           processed.referencedFiles,
           processed.typeReferenceDirectives,

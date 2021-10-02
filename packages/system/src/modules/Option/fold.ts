@@ -23,7 +23,7 @@ export const fold_: $OptionOps["fold"] = function (onNone, onSome) {
   ensureInstruction(this)
   switch (this._tag) {
     case "Some": {
-      return onSome(unsafeCoerce(this._value))
+      return onSome(unsafeCoerce(this.value))
     }
     case "None": {
       return onNone()

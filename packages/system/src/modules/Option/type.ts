@@ -26,6 +26,10 @@ export const registerOptionStaticOp =
 export namespace $Option {
   export type Option<A> = $Option<A>
 
+  export interface Some<A> extends $Option<A> {
+    readonly value: A
+  }
+
   export type _A<T> = [T] extends [
     {
       readonly [_Internal]: {

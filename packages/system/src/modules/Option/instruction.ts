@@ -3,7 +3,7 @@ import type { $Option } from "./type"
 
 export class ISome {
   readonly _tag = "Some"
-  constructor(readonly _value: unknown) {}
+  constructor(readonly value: unknown) {}
 }
 
 export class INone {

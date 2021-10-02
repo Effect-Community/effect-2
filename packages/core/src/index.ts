@@ -17,5 +17,10 @@ function x(): O<number> {
   )
 }
 
+const y = x()
+
 console.log(z())
-console.log(x())
+
+if (y.isSome()) {
+  console.log(y.value)
+}

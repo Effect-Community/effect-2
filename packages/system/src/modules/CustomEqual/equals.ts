@@ -13,14 +13,17 @@ declare module "./type" {
 }
 
 export const equals: $CustomEqualStaticOps["equals"] = function (x, y) {
+  // @ts-expect-error
+  if (x === y) {
+    return true
+  }
   if ($CustomHash.hash(x) !== $CustomHash.hash(y)) {
     return false
   }
   if (typeof x === "object" && x != null && _equalFn in x) {
     return (x as unknown as $CustomEqual)[_equalFn](y)
   }
-  // @ts-expect-error
-  return x === y
+  return false
 }
 
 if (shouldPolyfill) {

@@ -1,4 +1,5 @@
 import { $CustomEqual } from "../CustomEqual/type.js"
+import { $CustomHash } from "../CustomHash/type.js"
 import type { $Option, $OptionOps } from "./type.js"
 
 export const optionId: unique symbol = Symbol.for(
@@ -21,10 +22,10 @@ export class ISome<A> implements $Option.Some<A> {
     )
   }
 
-  [$CustomEqual._hashFn]() {
-    return $CustomEqual.combineHash(
-      $CustomEqual.hashString(`$Option.${this._tag}`),
-      $CustomEqual.hash(this.value)
+  [$CustomHash._hashFn]() {
+    return $CustomHash.combineHash(
+      $CustomHash.hashString(`$Option.${this._tag}`),
+      $CustomHash.hash(this.value)
     )
   }
 }
@@ -43,7 +44,7 @@ export class INone implements $Option.None {
     )
   }
 
-  [$CustomEqual._hashFn]() {
-    return $CustomEqual.hashString(`$Option.${this._tag}`)
+  [$CustomHash._hashFn]() {
+    return $CustomHash.hashString(`$Option.${this._tag}`)
   }
 }

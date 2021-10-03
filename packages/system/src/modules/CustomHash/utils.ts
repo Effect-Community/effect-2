@@ -1,10 +1,10 @@
 // forked from https://github.com/frptools
 
 import { PCGRandom as utils } from "../Random/pcg.js"
-import type { $CustomEqual } from "./type.js"
+import type { $CustomHash } from "./type.js"
 import { _hashFn } from "./type.js"
 
-export function hasHash(u: unknown): u is $CustomEqual {
+export function hasHash(u: unknown): u is $CustomHash {
   return typeof u === "object" && u !== null && _hashFn in u
 }
 

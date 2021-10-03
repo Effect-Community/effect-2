@@ -1,4 +1,5 @@
 import { unsafeCoerce } from "../Utils/coerce.js"
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import { ISucceed } from "./instruction.js"
 import type { $EffectStaticOps } from "./type.js"
 import { registerEffectStaticOp } from "./type.js"
@@ -20,6 +21,6 @@ export const succeed: $EffectStaticOps["succeed"] = function (thunk, trace) {
   return unsafeCoerce(new ISucceed(thunk, trace))
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectStaticOp("succeed")(succeed)
 }

@@ -1,4 +1,5 @@
 import { unsafeCoerce } from "../Utils/coerce.js"
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import { IFlatMap } from "./instruction.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { registerEffectOp, registerEffectStaticOp } from "./type.js"
@@ -41,7 +42,7 @@ export const flatMap: $EffectStaticOps["flatMap"] = function (f, trace) {
   return (self) => self.flatMap(f, trace)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("flatMap")(flatMap_)
   registerEffectStaticOp("flatMap")(flatMap)
 }

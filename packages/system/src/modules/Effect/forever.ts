@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { registerEffectOp, registerEffectStaticOp } from "./type.js"
 
@@ -31,7 +32,7 @@ export const forever: $EffectStaticOps["forever"] = function (self, trace) {
   return self.forever(trace)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("forever")(forever_)
   registerEffectStaticOp("forever")(forever)
 }

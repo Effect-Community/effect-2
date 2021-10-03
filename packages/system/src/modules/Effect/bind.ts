@@ -1,4 +1,5 @@
 import { unsafeCoerce } from "../Utils/coerce.js"
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $TypeUtils } from "../Utils/typeUtils.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { registerEffectOp, registerEffectStaticOp } from "./type.js"
@@ -47,9 +48,7 @@ export const bind: $EffectStaticOps["bind"] = function (k, f, trace) {
   return (self) => self.bind(k as any, f, trace) as any
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("bind")(bind_)
   registerEffectStaticOp("bind")(bind)
-} else {
-  console.log("YES")
 }

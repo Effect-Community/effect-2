@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { registerEffectOp, registerEffectStaticOp } from "./type.js"
 
@@ -46,7 +47,7 @@ export const zipLeft: $EffectStaticOps["zipLeft"] = function (f, trace) {
   return (self) => self.zipLeft(f, trace)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("zipLeft")(zipLeft_)
   registerEffectOp("<*")(zipLeft_)
   registerEffectStaticOp("zipLeft")(zipLeft)

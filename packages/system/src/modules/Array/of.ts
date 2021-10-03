@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $ArrayStaticOps } from "./type.js"
 import { registerArrayStaticOp } from "./type.js"
 
@@ -12,6 +13,6 @@ declare module "./type" {
 
 export const of: $ArrayStaticOps["of"] = (a) => [a]
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerArrayStaticOp("of")(of)
 }

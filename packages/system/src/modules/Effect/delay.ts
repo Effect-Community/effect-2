@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { $Effect, registerEffectOp, registerEffectStaticOp } from "./type.js"
 
@@ -38,7 +39,7 @@ export const delay: $EffectStaticOps["delay"] = function (ms) {
   return (self) => self.delay(ms)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("delay")(delay_)
   registerEffectStaticOp("delay")(delay)
 }

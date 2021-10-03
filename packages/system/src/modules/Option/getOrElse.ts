@@ -1,4 +1,5 @@
 import { identity } from "../Utils/identity.js"
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $OptionOps, $OptionStaticOps } from "./type.js"
 import { registerOptionOp, registerOptionStaticOp } from "./type.js"
 
@@ -26,7 +27,7 @@ export const getOrElse: $OptionStaticOps["getOrElse"] = function (orElse) {
   return (self) => self.getOrElse(orElse)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerOptionOp("getOrElse")(getOrElse_)
   registerOptionStaticOp("getOrElse")(getOrElse)
 }

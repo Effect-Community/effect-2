@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $OptionOps, $OptionStaticOps } from "./type.js"
 import { $Option, registerOptionOp, registerOptionStaticOp } from "./type.js"
 
@@ -25,7 +26,7 @@ export const flatMap: $OptionStaticOps["flatMap"] = function (f) {
   return (self) => self.flatMap(f)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerOptionOp("flatMap")(flatMap_)
   registerOptionStaticOp("flatMap")(flatMap)
 }

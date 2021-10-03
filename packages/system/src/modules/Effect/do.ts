@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $EffectStaticOps } from "./type.js"
 import { $Effect, registerEffectStaticOp } from "./type.js"
 
@@ -14,6 +15,6 @@ export const do_: $EffectStaticOps["do"] =
   /* #__PURE__ */
   $Effect.succeed(() => ({}), void 0)
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectStaticOp("do")(do_)
 }

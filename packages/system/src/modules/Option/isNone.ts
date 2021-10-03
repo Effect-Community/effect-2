@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $OptionOps, $OptionStaticOps } from "./type.js"
 import { registerOptionOp, registerOptionStaticOp } from "./type.js"
 
@@ -28,7 +29,7 @@ export const isNone: $OptionStaticOps["isNone"] = function (self) {
   return self.isNone()
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerOptionOp("isNone")(isNone_)
   registerOptionStaticOp("isNone")(isNone)
 }

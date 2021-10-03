@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $EffectOps, $EffectStaticOps } from "./type.js"
 import { $Effect, registerEffectOp, registerEffectStaticOp } from "./type.js"
 
@@ -38,7 +39,7 @@ export const map: $EffectStaticOps["map"] = function (f, trace) {
   return (self) => self.map(f, trace)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectOp("map")(map_)
   registerEffectStaticOp("map")(map)
 }

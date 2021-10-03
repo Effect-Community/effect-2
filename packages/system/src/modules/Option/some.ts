@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import { ISome } from "./instruction.js"
 import type { $OptionStaticOps } from "./type.js"
 import { registerOptionStaticOp } from "./type.js"
@@ -15,6 +16,6 @@ export const some: $OptionStaticOps["some"] = function (a) {
   return new ISome(a)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerOptionStaticOp("some")(some)
 }

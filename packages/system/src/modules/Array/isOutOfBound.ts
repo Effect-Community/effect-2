@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import type { $ArrayOps, $ArrayStaticOps } from "./type.js"
 import { registerArrayOp, registerArrayStaticOp } from "./type.js"
 
@@ -25,7 +26,7 @@ export const isOutOfBound: $ArrayStaticOps["isOutOfBound"] = function (i) {
   return (self) => self.isOutOfBound(i)
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerArrayOp("isOutOfBound")(isOutOfBound_)
   registerArrayStaticOp("isOutOfBound")(isOutOfBound)
 }

@@ -1,3 +1,4 @@
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import { INone } from "./instruction.js"
 import type { $OptionStaticOps } from "./type.js"
 import { registerOptionStaticOp } from "./type.js"
@@ -11,8 +12,10 @@ declare module "./type" {
   }
 }
 
-export const none: $OptionStaticOps["none"] = new INone()
+export const none: $OptionStaticOps["none"] =
+  /* #__PURE__ */
+  new INone()
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerOptionStaticOp("none")(none)
 }

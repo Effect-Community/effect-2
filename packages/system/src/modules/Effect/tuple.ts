@@ -1,6 +1,7 @@
 import type { $Array } from "../Array/type.js"
 import { $Effect, registerEffectStaticOp } from "../Effect/type.js"
 import type { $Tuple } from "../Tuple/type.js"
+import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
 import { traceFrom } from "../Utils/traceFrom.js"
 import type { $EffectStaticOps } from "./type.js"
 
@@ -42,6 +43,6 @@ export const tuple: $EffectStaticOps["tuple"] = function (...args) {
   return $Effect.die(() => new Error("Not Implemented"))
 }
 
-if (typeof globalThis.ETS_PLUGIN === "undefined" || !globalThis.ETS_PLUGIN) {
+if (shouldPolyfill) {
   registerEffectStaticOp("tuple")(tuple)
 }

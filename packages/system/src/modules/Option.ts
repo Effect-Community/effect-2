@@ -8,5 +8,6 @@ import "./Option/some.js"
 import "./Option/get.js"
 import "./Option/isSome.js"
 import "./Option/isNone.js"
+import "./Option/equals.js"
 
 export { $Option } from "./Option/type.js"

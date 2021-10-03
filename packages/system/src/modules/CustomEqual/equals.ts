@@ -1,7 +1,8 @@
 import type { $CustomEqual } from "../CustomEqual"
 import { shouldPolyfill } from "../Utils/shouldPolyfill.js"
+import { hash } from "./hash.js"
 import type { $CustomEqualStaticOps } from "./type.js"
-import { _equal, registerCustomEqualStaticOp } from "./type.js"
+import { _equalFn, registerCustomEqualStaticOp } from "./type.js"
 
 declare module "./type" {
   interface $CustomEqualStaticOps {
@@ -13,8 +14,11 @@ declare module "./type" {
 }
 
 export const equals: $CustomEqualStaticOps["equals"] = function (x, y) {
-  if (typeof x === "object" && x != null && _equal in x) {
-    return (x as unknown as $CustomEqual)[_equal](y)
+  if (hash(x) !== hash(y)) {
+    return false
+  }
+  if (typeof x === "object" && x != null && _equalFn in x) {
+    return (x as unknown as $CustomEqual)[_equalFn](y)
   }
   // @ts-expect-error
   return x === y

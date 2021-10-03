@@ -1,4 +1,5 @@
+import "./CustomEqual/type.js"
 import "./CustomEqual/equals.js"
-import "./CustomEqual/_equal.js"
+import "./CustomEqual/hash.js"
 
 export { $CustomEqual } from "./CustomEqual/type.js"
